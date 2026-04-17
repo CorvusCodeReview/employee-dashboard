@@ -97,10 +97,17 @@ def submit_report():
         times = request.form.getlist('time')
         notes_list = request.form.getlist('notes')
 
+        # ✅ Basic validation
+        if not task_ids or not times:
+            return "Please fill all required fields"
+
         if existing_report:
             ReportTask.query.filter_by(report_id=existing_report.id).delete()
 
             for i in range(len(task_ids)):
+                if not times[i]:
+                    continue
+
                 db.session.add(ReportTask(
                     report_id=existing_report.id,
                     task_id=task_ids[i],
@@ -117,6 +124,9 @@ def submit_report():
             db.session.commit()
 
             for i in range(len(task_ids)):
+                if not times[i]:
+                    continue
+
                 db.session.add(ReportTask(
                     report_id=report.id,
                     task_id=task_ids[i],
@@ -197,6 +207,7 @@ def report_details(report_id):
         user=user
     )
 
+
 # ------------------ MANAGE TASKS ------------------
 
 @app.route('/manage_tasks', methods=['GET', 'POST'])
@@ -210,11 +221,13 @@ def manage_tasks():
         name = request.form['name']
         time = request.form['time']
 
-        db.session.add(Task(name=name, suggested_time=time))
-        db.session.commit()
+        if name and time:
+            db.session.add(Task(name=name, suggested_time=time))
+            db.session.commit()
 
     tasks = Task.query.all()
     return render_template('manage_tasks.html', tasks=tasks)
+
 
 # ------------------ EXPORT EXCEL ------------------
 
@@ -225,18 +238,7 @@ def export_excel():
     if current_user.role not in ['manager', 'senior']:
         return "Access Denied"
 
-    selected_user = request.args.get('user_id')
-    selected_date = request.args.get('date')
-
-    query = Report.query
-
-    if selected_user:
-        query = query.filter_by(user_id=selected_user)
-
-    if selected_date:
-        query = query.filter_by(date=selected_date)
-
-    reports = query.all()
+    reports = Report.query.all()
 
     data = []
 
@@ -256,19 +258,17 @@ def export_excel():
             })
 
     df = pd.DataFrame(data)
-
     file_path = "report.xlsx"
     df.to_excel(file_path, index=False)
 
     return send_file(file_path, as_attachment=True)
 
 
-# ------------------ RUN ------------------
+# ------------------ INIT DATA ------------------
 
 with app.app_context():
     db.create_all()
 
-    # Add default users
     if not User.query.first():
         db.session.add_all([
             User(username="employee1", password="123", role="employee"),
@@ -277,7 +277,6 @@ with app.app_context():
         ])
         db.session.commit()
 
-    # Add default tasks
     if not Task.query.first():
         db.session.add_all([
             Task(name="Prepare Report", suggested_time="1-2 hrs"),
@@ -285,6 +284,9 @@ with app.app_context():
             Task(name="Data Entry", suggested_time="1 hr")
         ])
         db.session.commit()
+
+
+# ------------------ RUN ------------------
 
 if __name__ == '__main__':
     app.run()
