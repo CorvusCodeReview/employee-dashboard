@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Tasks</title>
+</head>
+<body>
+
+<h2>Manage Tasks</h2>
+
+<h3>Add New Task</h3>
+
+<form method="POST">
+    <input type="text" name="name" placeholder="Task Name" required>
+    <input type="text" name="time" placeholder="Suggested Time" required>
+    <button type="submit">Add Task</button>
+</form>
+
+<hr>
+
+<h3>Existing Tasks</h3>
+
+<table border="1">
+    <tr>
+        <th>Task</th>
+        <th>Suggested Time</th>
+    </tr>
+
+    {% for task in tasks %}
+    <tr>
+        <td>{{ task.name }}</td>
+        <td>{{ task.suggested_time }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
