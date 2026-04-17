@@ -250,5 +250,13 @@ def export_excel():
 with app.app_context():
     db.create_all()
 
+if not User.query.first():
+        db.session.add_all([
+            User(username="employee1", password="123", role="employee"),
+            User(username="senior1", password="123", role="senior"),
+            User(username="manager1", password="123", role="manager")
+        ])
+        db.session.commit()
+
 if __name__ == '__main__':
     app.run()
