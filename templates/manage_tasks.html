@@ -10,8 +10,12 @@
 <h3>Add New Task</h3>
 
 <form method="POST">
-    <input type="text" name="name" placeholder="Task Name" required>
-    <input type="text" name="time" placeholder="Suggested Time" required>
+    <label>Task Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Suggested Time:</label>
+    <input type="text" name="time" required>
+
     <button type="submit">Add Task</button>
 </form>
 
@@ -19,7 +23,7 @@
 
 <h3>Existing Tasks</h3>
 
-<table border="1">
+<table border="1" cellpadding="8">
     <tr>
         <th>Task</th>
         <th>Suggested Time</th>
