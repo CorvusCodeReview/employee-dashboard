@@ -8,18 +8,21 @@
             let container = document.getElementById("tasks-container");
 
             let newRow = `
-            <div>
+            <div style="margin-bottom:10px;">
+                <label>Task:</label>
                 <select name="task">
                     {% for task in tasks %}
                         <option value="{{ task.id }}">
-                            {{ task.name }} ({{ task.suggested_time }})
+                            {{ task.name }} - (Typically: {{ task.suggested_time }})
                         </option>
                     {% endfor %}
                 </select>
 
-                <input type="text" name="time" placeholder="Time">
-                <input type="text" name="notes" placeholder="Notes">
-                <br><br>
+                <label>Time:</label>
+                <input type="text" name="time" placeholder="e.g. 1.5 hrs">
+
+                <label>Notes:</label>
+                <input type="text" name="notes" placeholder="Optional notes">
             </div>
             `;
 
@@ -38,39 +41,49 @@
 
 {% if existing_tasks %}
     {% for row in existing_tasks %}
-        <div>
+        <div style="margin-bottom:10px;">
+            <label>Task:</label>
             <select name="task">
                 {% for task in tasks %}
                     <option value="{{ task.id }}"
-                        {% if task.id == row.task_id %} selected {% endif %}>
-                        {{ task.name }} ({{ task.suggested_time }})
+                        {% if task.id == row.task_id|int %} selected {% endif %}>
+                        {{ task.name }} - (Typically: {{ task.suggested_time }})
                     </option>
                 {% endfor %}
             </select>
 
-            <input type="text" name="time" value="{{ row.actual_time }}">
-            <input type="text" name="notes" value="{{ row.notes }}">
+            <label>Time:</label>
+            <input type="text" name="time" value="{{ row.actual_time }}" placeholder="e.g. 1.5 hrs">
+
+            <label>Notes:</label>
+            <input type="text" name="notes" value="{{ row.notes }}" placeholder="Optional notes">
         </div>
     {% endfor %}
 {% else %}
-    <div>
+    <div style="margin-bottom:10px;">
+        <label>Task:</label>
         <select name="task">
             {% for task in tasks %}
                 <option value="{{ task.id }}">
-                    {{ task.name }} ({{ task.suggested_time }})
+                    {{ task.name }} - (Typically: {{ task.suggested_time }})
                 </option>
             {% endfor %}
         </select>
 
-        <input type="text" name="time">
-        <input type="text" name="notes">
+        <label>Time:</label>
+        <input type="text" name="time" placeholder="e.g. 1.5 hrs">
+
+        <label>Notes:</label>
+        <input type="text" name="notes" placeholder="Optional notes">
     </div>
 {% endif %}
 
 </div>
 
 <br>
+
 <button type="button" onclick="addRow()">+ Add Task</button>
+
 <br><br>
 
 <button type="submit">Submit</button>
