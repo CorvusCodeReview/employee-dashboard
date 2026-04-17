@@ -56,7 +56,7 @@ def load_user(user_id):
 @app.route('/')
 @login_required
 def dashboard():
-    return f"Hello {current_user.username}! Role: {current_user.role}"
+    return render_template('dashboard.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
