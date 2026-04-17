@@ -247,10 +247,11 @@ def export_excel():
 
 # ------------------ RUN ------------------
 
-with app.app_context():
+@app.before_first_request
+def create_tables():
     db.create_all()
 
-if not User.query.first():
+    if not User.query.first():
         db.session.add_all([
             User(username="employee1", password="123", role="employee"),
             User(username="senior1", password="123", role="senior"),
