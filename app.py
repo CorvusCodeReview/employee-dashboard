@@ -197,6 +197,24 @@ def report_details(report_id):
         user=user
     )
 
+# ------------------ MANAGE TASKS ------------------
+
+@app.route('/manage_tasks', methods=['GET', 'POST'])
+@login_required
+def manage_tasks():
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    if request.method == 'POST':
+        name = request.form['name']
+        time = request.form['time']
+
+        db.session.add(Task(name=name, suggested_time=time))
+        db.session.commit()
+
+    tasks = Task.query.all()
+    return render_template('manage_tasks.html', tasks=tasks)
 
 # ------------------ EXPORT EXCEL ------------------
 
