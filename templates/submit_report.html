@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Report</title>
+
+    <script>
+        function addRow() {
+            let container = document.getElementById("tasks-container");
+
+            let newRow = `
+            <div>
+                <select name="task">
+                    {% for task in tasks %}
+                        <option value="{{ task.id }}">
+                            {{ task.name }} ({{ task.suggested_time }})
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <input type="text" name="time" placeholder="Time">
+                <input type="text" name="notes" placeholder="Notes">
+                <br><br>
+            </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', newRow);
+        }
+    </script>
+
+</head>
+<body>
+
+<h2>Submit Daily Report</h2>
+
+<form method="POST">
+
+<div id="tasks-container">
+
+{% if existing_tasks %}
+    {% for row in existing_tasks %}
+        <div>
+            <select name="task">
+                {% for task in tasks %}
+                    <option value="{{ task.id }}"
+                        {% if task.id == row.task_id %} selected {% endif %}>
+                        {{ task.name }} ({{ task.suggested_time }})
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input type="text" name="time" value="{{ row.actual_time }}">
+            <input type="text" name="notes" value="{{ row.notes }}">
+        </div>
+    {% endfor %}
+{% else %}
+    <div>
+        <select name="task">
+            {% for task in tasks %}
+                <option value="{{ task.id }}">
+                    {{ task.name }} ({{ task.suggested_time }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="text" name="time">
+        <input type="text" name="notes">
+    </div>
+{% endif %}
+
+</div>
+
+<br>
+<button type="button" onclick="addRow()">+ Add Task</button>
+<br><br>
+
+<button type="submit">Submit</button>
+
+</form>
+
+</body>
+</html>

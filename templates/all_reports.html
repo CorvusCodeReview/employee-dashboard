@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Reports</title>
+</head>
+<body>
+
+<h2>All Employee Reports</h2>
+
+<form method="GET">
+
+    <label>Employee:</label>
+    <select name="user_id">
+        <option value="">All</option>
+        {% for user in users %}
+            <option value="{{ user.id }}"
+                {% if selected_user == user.id|string %} selected {% endif %}>
+                {{ user.username }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Date:</label>
+    <input type="date" name="date" value="{{ selected_date }}">
+
+    <button type="submit">Filter</button>
+
+</form>
+
+<a href="/export?user_id={{ selected_user }}&date={{ selected_date }}">
+    <button>Download Excel</button>
+</a>
+
+<br>
+
+<table border="1">
+    <tr>
+        <th>Employee</th>
+        <th>Date</th>
+        <th>View</th>
+    </tr>
+
+    {% for report in reports %}
+    <tr>
+        <td>
+            {% for user in users %}
+                {% if user.id == report.user_id %}
+                    {{ user.username }}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td>{{ report.date }}</td>
+        <td>
+            <a href="/report/{{ report.id }}">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>

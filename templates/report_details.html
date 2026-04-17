@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Details</title>
+</head>
+<body>
+
+<h2>Report Details</h2>
+
+<p><strong>Employee:</strong> {{ user.username }}</p>
+<p><strong>Date:</strong> {{ report.date }}</p>
+
+<table border="1">
+    <tr>
+        <th>Task</th>
+        <th>Time</th>
+        <th>Notes</th>
+    </tr>
+
+    {% for t in tasks %}
+    <tr>
+        <td>{{ task_names[t.task_id] }}</td>
+        <td>{{ t.actual_time }}</td>
+        <td>{{ t.notes }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

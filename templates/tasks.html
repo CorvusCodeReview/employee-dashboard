@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+
+<h2>Task List</h2>
+
+<table border="1">
+    <tr>
+        <th>Task Name</th>
+        <th>Suggested Time</th>
+    </tr>
+
+    {% for task in tasks %}
+    <tr>
+        <td>{{ task.name }}</td>
+        <td>{{ task.suggested_time }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
