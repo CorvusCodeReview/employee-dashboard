@@ -7,14 +7,16 @@
 
 <h2>My Reports</h2>
 
-<table border="1">
+<table border="1" cellpadding="8">
     <tr>
         <th>Date</th>
+        <th>View</th>
     </tr>
 
     {% for report in reports %}
     <tr>
         <td>{{ report.date }}</td>
+        <td><a href="/report/{{ report.id }}">View</a></td>
     </tr>
     {% endfor %}
 
