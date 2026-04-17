@@ -250,11 +250,21 @@ def export_excel():
 with app.app_context():
     db.create_all()
 
+    # Add default users
     if not User.query.first():
         db.session.add_all([
             User(username="employee1", password="123", role="employee"),
             User(username="senior1", password="123", role="senior"),
             User(username="manager1", password="123", role="manager")
+        ])
+        db.session.commit()
+
+    # Add default tasks
+    if not Task.query.first():
+        db.session.add_all([
+            Task(name="Prepare Report", suggested_time="1-2 hrs"),
+            Task(name="Client Call", suggested_time="30 mins"),
+            Task(name="Data Entry", suggested_time="1 hr")
         ])
         db.session.commit()
 
