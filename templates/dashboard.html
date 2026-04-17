@@ -18,6 +18,7 @@
 
     {% if current_user.role in ['manager', 'senior'] %}
         <li><a href="/all_reports">All Reports</a></li>
+        <li><a href="/manage_tasks">Manage Tasks</a></li>
     {% endif %}
 
     <li><a href="/logout">Logout</a></li>
