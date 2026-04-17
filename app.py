@@ -247,8 +247,7 @@ def export_excel():
 
 # ------------------ RUN ------------------
 
-@app.before_first_request
-def create_tables():
+with app.app_context():
     db.create_all()
 
     if not User.query.first():
