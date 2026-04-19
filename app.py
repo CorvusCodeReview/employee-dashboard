@@ -240,7 +240,7 @@ def my_reports():
 @login_required
 def all_reports():
 
-    if current_user.role not in ['manager', 'senior']:
+    if current_user.role != 'manager':
         return "Access Denied"
 
     selected_user = request.args.get('user_id')
