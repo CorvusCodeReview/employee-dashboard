@@ -7,38 +7,69 @@
 
     <style>
         body {
-            background-color: #f5f7fa;
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
         }
+
         .navbar {
-            background-color: #1f2937;
+            background: #111827;
+            padding: 10px 20px;
         }
-        .navbar-brand, .nav-link {
-            color: white !important;
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: bold;
         }
+
+        .nav-link {
+            color: #d1d5db !important;
+            margin-right: 15px;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+        }
+
         .card {
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .page-title {
+            font-weight: 600;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 
 <body>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Dashboard</a>
+<nav class="navbar d-flex justify-content-between">
+    <div>
+        <a class="navbar-brand" href="/">Employee Dashboard</a>
+    </div>
 
-        <div>
-            <a class="nav-link d-inline" href="/submit_report">Submit</a>
-            <a class="nav-link d-inline" href="/my_reports">My Reports</a>
+    <div>
+        <a class="nav-link d-inline" href="/submit_report">Submit</a>
+        <a class="nav-link d-inline" href="/my_reports">My Reports</a>
 
-            {% if current_user.role in ['manager','senior'] %}
-                <a class="nav-link d-inline" href="/all_reports">All Reports</a>
-                <a class="nav-link d-inline" href="/manage_tasks">Manage Tasks</a>
-            {% endif %}
+        {% if current_user.role in ['manager','senior'] %}
+            <a class="nav-link d-inline" href="/all_reports">All Reports</a>
+            <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
+        {% endif %}
 
-            <a class="nav-link d-inline" href="/logout">Logout</a>
-        </div>
+        <a class="nav-link d-inline" href="/change_password">Password</a>
+        <a class="nav-link d-inline" href="/logout">Logout</a>
     </div>
 </nav>
 
