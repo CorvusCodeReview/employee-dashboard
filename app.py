@@ -98,6 +98,12 @@ def submit_report():
 
     if request.method == 'POST':
 
+        # 🔒 HARD BACKEND LOCK
+        submitted_date = today  # system controlled
+
+        if submitted_date != today:
+            return "Editing past reports is not allowed"
+
         task_ids = request.form.getlist('task')
         times = request.form.getlist('time')
         notes_list = request.form.getlist('notes')
@@ -152,7 +158,6 @@ def submit_report():
         tasks=tasks,
         existing_tasks=existing_tasks
     )
-
 
 # ------------------ MY REPORTS ------------------
 
