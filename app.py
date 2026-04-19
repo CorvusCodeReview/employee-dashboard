@@ -94,28 +94,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/setup_tasks')
-def setup_tasks():
-
-    tasks = [
-        {"name": "PPRA", "time": "Approx 30 mins-1hr"},
-        {"name": "Lead Uploads", "time": "Upto 2hrs"},
-        {"name": "Lead QA", "time": "Upto 2hrs"},
-        {"name": "Custom Report", "time": "Upto 3-4hrs"},
-    ]
-
-    for t in tasks:
-        existing = Task.query.filter_by(name=t["name"]).first()
-
-        if not existing:
-            db.session.add(Task(
-                name=t["name"],
-                suggested_time=t["time"]
-            ))
-
-    db.session.commit()
-
-    return "Tasks created successfully!"
 
 # ------------------ SUBMIT REPORT ------------------
 
