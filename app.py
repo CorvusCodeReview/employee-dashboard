@@ -97,10 +97,6 @@ def logout():
 @app.route('/setup_users')
 def setup_users():
 
-    # ❌ delete old users
-    User.query.delete()
-    db.session.commit()
-
     users = [
         {"username": "employee1", "password": "emp123", "role": "employee"},
         {"username": "employee2", "password": "emp123", "role": "employee"},
@@ -109,15 +105,22 @@ def setup_users():
     ]
 
     for u in users:
-        db.session.add(User(
-            username=u["username"],
-            password=generate_password_hash(u["password"]),  # 🔐 hashed
-            role=u["role"]
-        ))
+        existing = User.query.filter_by(username=u["username"]).first()
+
+        if existing:
+            # 🔁 Update password safely
+            existing.password = generate_password_hash(u["password"])
+        else:
+            # ➕ Create new user
+            db.session.add(User(
+                username=u["username"],
+                password=generate_password_hash(u["password"]),
+                role=u["role"]
+            ))
 
     db.session.commit()
 
-    return "Users recreated with secure passwords!"
+    return "Users updated successfully!"
 
 # ------------------ SUBMIT REPORT ------------------
 
