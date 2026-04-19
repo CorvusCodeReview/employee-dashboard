@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 import pytz
 
