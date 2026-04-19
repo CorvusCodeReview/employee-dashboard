@@ -94,6 +94,26 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+
+    if request.method == 'POST':
+
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+
+        # verify current password
+        if not check_password_hash(current_user.password, current_password):
+            return "Current password is incorrect"
+
+        # update password
+        current_user.password = generate_password_hash(new_password)
+        db.session.commit()
+
+        return "Password updated successfully!"
+
+    return render_template('change_password.html')
 
 # ------------------ SUBMIT REPORT ------------------
 
