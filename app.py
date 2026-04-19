@@ -73,6 +73,21 @@ def dashboard():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
+
+    if request.method == 'POST':
+
+        user = User.query.filter_by(
+            username=request.form['username']
+        ).first()
+
+        if user and check_password_hash(user.password, request.form['password']):
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        else:
+            error = "Invalid username or password"
+
+    return render_template('login.html', error=error)
     if request.method == 'POST':
 
         user = User.query.filter_by(
