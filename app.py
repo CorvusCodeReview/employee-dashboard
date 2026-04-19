@@ -94,33 +94,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/setup_users')
-def setup_users():
-
-    users = [
-        {"username": "employee1", "password": "emp123", "role": "employee"},
-        {"username": "employee2", "password": "emp123", "role": "employee"},
-        {"username": "senior1", "password": "senior123", "role": "senior"},
-        {"username": "manager1", "password": "manager123", "role": "manager"},
-    ]
-
-    for u in users:
-        existing = User.query.filter_by(username=u["username"]).first()
-
-        if existing:
-            # 🔁 Update password safely
-            existing.password = generate_password_hash(u["password"])
-        else:
-            # ➕ Create new user
-            db.session.add(User(
-                username=u["username"],
-                password=generate_password_hash(u["password"]),
-                role=u["role"]
-            ))
-
-    db.session.commit()
-
-    return "Users updated successfully!"
 
 # ------------------ SUBMIT REPORT ------------------
 
