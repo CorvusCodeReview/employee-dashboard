@@ -1,32 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manage Tasks</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h2>Manage Tasks</h2>
+{% block content %}
 
-<h3>Add New Task</h3>
+<h3>Manage Tasks</h3>
 
-<form method="POST">
-    <label>Task Name:</label>
-    <input type="text" name="name" required>
+<div class="card p-3 mt-3">
 
-    <label>Suggested Time:</label>
-    <input type="text" name="time" required>
+<form method="POST" class="row g-3">
 
-    <button type="submit">Add Task</button>
+    <div class="col-md-5">
+        <input name="name" class="form-control" placeholder="Task name" required>
+    </div>
+
+    <div class="col-md-5">
+        <input name="time" class="form-control" placeholder="Estimated time" required>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">Add</button>
+    </div>
+
 </form>
 
-<hr>
+</div>
 
-<h3>Existing Tasks</h3>
+<div class="card mt-3 p-3">
 
-<table border="1" cellpadding="8">
+<table class="table table-striped">
     <tr>
         <th>Task</th>
-        <th>Suggested Time</th>
+        <th>Estimated Time</th>
     </tr>
 
     {% for task in tasks %}
@@ -35,8 +38,8 @@
         <td>{{ task.suggested_time }}</td>
     </tr>
     {% endfor %}
-
 </table>
 
-</body>
-</html>
+</div>
+
+{% endblock %}
