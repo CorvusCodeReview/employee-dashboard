@@ -34,7 +34,7 @@ def get_ist_date():
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(200))
+    password = db.Column(db.String(255))
     role = db.Column(db.String(50))
 
 
