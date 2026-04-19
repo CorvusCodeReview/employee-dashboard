@@ -1,8 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, request, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date
+from datetime import datetime
 import pandas as pd
+import pytz
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
@@ -15,6 +16,13 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+# ------------------ TIMEZONE ------------------
+
+def get_ist_date():
+    ist = pytz.timezone('Asia/Kolkata')
+    return datetime.now(ist).date()
 
 
 # ------------------ MODELS ------------------
@@ -89,7 +97,7 @@ def logout():
 @login_required
 def submit_report():
 
-    today = str(date.today())
+    today = str(get_ist_date())
 
     existing_report = Report.query.filter_by(
         user_id=current_user.id,
@@ -98,10 +106,8 @@ def submit_report():
 
     if request.method == 'POST':
 
-        # 🔒 HARD BACKEND LOCK
-        submitted_date = today  # system controlled
-
-        if submitted_date != today:
+        # 🔒 HARD BACKEND LOCK (IST-based)
+        if str(get_ist_date()) != today:
             return "Editing past reports is not allowed"
 
         task_ids = request.form.getlist('task')
@@ -159,13 +165,14 @@ def submit_report():
         existing_tasks=existing_tasks
     )
 
+
 # ------------------ MY REPORTS ------------------
 
 @app.route('/my_reports')
 @login_required
 def my_reports():
     reports = Report.query.filter_by(user_id=current_user.id).all()
-    today = str(date.today())
+    today = str(get_ist_date())
     return render_template('my_reports.html', reports=reports, today=today)
 
 
