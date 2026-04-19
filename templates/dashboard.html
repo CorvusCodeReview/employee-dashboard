@@ -1,29 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h2>Welcome {{ current_user.username }}</h2>
-<p>Role: {{ current_user.role }}</p>
+{% block content %}
 
-<hr>
+<h3 class="page-title">Dashboard</h3>
 
-<h3>Menu</h3>
+<div class="card p-4 mb-4">
+    <h5>Welcome, {{ current_user.username }}</h5>
+    <p class="text-muted">Role: {{ current_user.role }}</p>
+</div>
 
-<ul>
-    <li><a href="/submit_report">Submit Report</a></li>
-    <li><a href="/my_reports">My Reports</a></li>
+<div class="row g-3">
 
-    {% if current_user.role in ['manager', 'senior'] %}
-        <li><a href="/all_reports">All Reports</a></li>
-        <li><a href="/manage_tasks">Manage Tasks</a></li>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6>Submit Report</h6>
+            <a href="/submit_report" class="btn btn-primary mt-2">Open</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6>My Reports</h6>
+            <a href="/my_reports" class="btn btn-primary mt-2">View</a>
+        </div>
+    </div>
+
+    {% if current_user.role in ['manager','senior'] %}
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6>All Reports</h6>
+            <a href="/all_reports" class="btn btn-primary mt-2">Open</a>
+        </div>
+    </div>
     {% endif %}
 
-    <li><a href="/logout">Logout</a></li>
-    <li><a href="/change_password">Change Password</a></li>
-</ul>
+</div>
 
-</body>
-</html>
+{% endblock %}
