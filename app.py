@@ -8,7 +8,9 @@ import pytz
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+import os
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -303,23 +305,6 @@ def export_excel():
 
 with app.app_context():
     db.create_all()
-
-    if not User.query.first():
-        db.session.add_all([
-            User(username="employee1", password="123", role="employee"),
-            User(username="senior1", password="123", role="senior"),
-            User(username="manager1", password="123", role="manager")
-        ])
-        db.session.commit()
-
-    if not Task.query.first():
-        db.session.add_all([
-            Task(name="Prepare Report", suggested_time="1-2 hrs"),
-            Task(name="Client Call", suggested_time="30 mins"),
-            Task(name="Data Entry", suggested_time="1 hr")
-        ])
-        db.session.commit()
-
 
 # ------------------ RUN ------------------
 
