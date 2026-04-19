@@ -28,6 +28,7 @@
 
         .nav-link:hover {
             color: #fff !important;
+            text-decoration: underline;
         }
 
         .card {
@@ -49,6 +50,14 @@
             font-weight: 600;
             margin-bottom: 15px;
         }
+
+        /* ✅ Fix dropdown arrow */
+        select.form-control {
+            appearance: auto;
+            -webkit-appearance: auto;
+            -moz-appearance: auto;
+            background-color: white;
+        }
     </style>
 </head>
 
@@ -68,7 +77,7 @@
             <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
         {% endif %}
 
-        <a class="nav-link d-inline" href="/change_password">Password</a>
+        <a class="nav-link d-inline" href="/change_password">Change Password</a>
         <a class="nav-link d-inline" href="/logout">Logout</a>
     </div>
 </nav>
