@@ -130,6 +130,25 @@ def change_password():
 
     return render_template('change_password.html')
 
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+
+    error = None
+
+    if request.method == 'POST':
+        username = request.form['username']
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            error = "User not found"
+        else:
+            user.password = generate_password_hash("temp123")
+            db.session.commit()
+            return "Password reset to temp123. Please login and change password."
+
+    return render_template('reset_password.html', error=error)
+
 # ------------------ SUBMIT REPORT ------------------
 
 @app.route('/submit_report', methods=['GET', 'POST'])
