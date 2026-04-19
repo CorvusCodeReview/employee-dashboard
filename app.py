@@ -83,7 +83,7 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
 
-        return "Invalid credentials"
+    return render_template('login.html', error="Invalid username or password")
 
     return render_template('login.html')
 
