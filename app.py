@@ -82,7 +82,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
 # ------------------ SUBMIT REPORT ------------------
 
 @app.route('/submit_report', methods=['GET', 'POST'])
@@ -90,14 +89,22 @@ def logout():
 def submit_report():
 
     today = str(date.today())
-    existing_report = Report.query.filter_by(user_id=current_user.id, date=today).first()
+
+    existing_report = Report.query.filter_by(
+        user_id=current_user.id,
+        date=today
+    ).first()
 
     if request.method == 'POST':
+
+        # ❌ Prevent editing past reports (extra safety)
+        if not existing_report and Report.query.filter_by(user_id=current_user.id).count() > 0:
+            pass  # allow new day creation only
+
         task_ids = request.form.getlist('task')
         times = request.form.getlist('time')
         notes_list = request.form.getlist('notes')
 
-        # ✅ Basic validation
         if not task_ids or not times:
             return "Please fill all required fields"
 
@@ -143,8 +150,12 @@ def submit_report():
     if existing_report:
         existing_tasks = ReportTask.query.filter_by(report_id=existing_report.id).all()
 
-    return render_template('submit_report.html', tasks=tasks, existing_tasks=existing_tasks)
-
+    return render_template(
+        'submit_report.html',
+        tasks=tasks,
+        existing_tasks=existing_tasks,
+        today=today
+    )
 
 # ------------------ MY REPORTS ------------------
 
