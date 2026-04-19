@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Report Details</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h2>Report Details</h2>
+{% block content %}
+
+<h3>Report Details</h3>
+
+<div class="card p-3 mt-3">
 
 <p><strong>Employee:</strong> {{ user.username }}</p>
 <p><strong>Date:</strong> {{ report.date }}</p>
 
-<table border="1" cellpadding="8">
+</div>
+
+<div class="card mt-3 p-3">
+
+<table class="table table-bordered">
     <tr>
         <th>Task</th>
         <th>Time</th>
@@ -24,8 +27,8 @@
         <td>{{ t.notes }}</td>
     </tr>
     {% endfor %}
-
 </table>
 
-</body>
-</html>
+</div>
+
+{% endblock %}
