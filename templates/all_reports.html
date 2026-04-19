@@ -46,7 +46,13 @@
 
     {% for report in reports %}
     <tr>
-        <td>{{ report.user_id }}</td>
+        <td>
+            {% for user in users %}
+                {% if user.id == report.user_id %}
+                    {{ user.username }}
+                {% endif %}
+            {% endfor %}
+        </td>
         <td>{{ report.date }}</td>
         <td>
             <a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a>
