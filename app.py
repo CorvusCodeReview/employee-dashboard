@@ -82,6 +82,7 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 # ------------------ SUBMIT REPORT ------------------
 
 @app.route('/submit_report', methods=['GET', 'POST'])
@@ -96,10 +97,6 @@ def submit_report():
     ).first()
 
     if request.method == 'POST':
-
-        # ❌ Prevent editing past reports (extra safety)
-        if not existing_report and Report.query.filter_by(user_id=current_user.id).count() > 0:
-            pass  # allow new day creation only
 
         task_ids = request.form.getlist('task')
         times = request.form.getlist('time')
@@ -153,9 +150,9 @@ def submit_report():
     return render_template(
         'submit_report.html',
         tasks=tasks,
-        existing_tasks=existing_tasks,
-        today=today
+        existing_tasks=existing_tasks
     )
+
 
 # ------------------ MY REPORTS ------------------
 
@@ -165,8 +162,6 @@ def my_reports():
     reports = Report.query.filter_by(user_id=current_user.id).all()
     today = str(date.today())
     return render_template('my_reports.html', reports=reports, today=today)
-    reports = Report.query.filter_by(user_id=current_user.id).all()
-    return render_template('my_reports.html', reports=reports)
 
 
 # ------------------ ALL REPORTS ------------------
@@ -208,6 +203,9 @@ def all_reports():
 def report_details(report_id):
 
     report = Report.query.get(report_id)
+
+    if not report:
+        return "Report not found"
 
     tasks = ReportTask.query.filter_by(report_id=report.id).all()
     task_names = {task.id: task.name for task in Task.query.all()}
@@ -252,7 +250,18 @@ def export_excel():
     if current_user.role not in ['manager', 'senior']:
         return "Access Denied"
 
-    reports = Report.query.all()
+    selected_user = request.args.get('user_id')
+    selected_date = request.args.get('date')
+
+    query = Report.query
+
+    if selected_user:
+        query = query.filter_by(user_id=selected_user)
+
+    if selected_date:
+        query = query.filter_by(date=selected_date)
+
+    reports = query.all()
 
     data = []
 
