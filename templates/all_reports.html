@@ -1,62 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>All Reports</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h2>All Employee Reports</h2>
+{% block content %}
 
-<form method="GET">
+<h3>All Reports</h3>
 
-    <label>Employee:</label>
-    <select name="user_id">
-        <option value="">All</option>
-        {% for user in users %}
-            <option value="{{ user.id }}"
-                {% if selected_user == user.id|string %} selected {% endif %}>
-                {{ user.username }}
-            </option>
-        {% endfor %}
-    </select>
+<div class="card p-3 mt-3">
 
-    <label>Date:</label>
-    <input type="date" name="date" value="{{ selected_date }}">
+<form method="GET" class="row g-3">
 
-    <button type="submit">Filter</button>
+    <div class="col-md-4">
+        <label>Filter by Employee</label>
+        <select name="user_id" class="form-control">
+            <option value="">All</option>
+            {% for user in users %}
+                <option value="{{ user.id }}"
+                {% if selected_user == user.id|string %}selected{% endif %}>
+                    {{ user.username }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label>Filter by Date</label>
+        <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary">Filter</button>
+        <a href="/export?user_id={{ selected_user }}&date={{ selected_date }}" class="btn btn-success ms-2">Export</a>
+    </div>
 
 </form>
 
-<br>
+</div>
 
-<a href="/export?user_id={{ selected_user }}&date={{ selected_date }}">
-    <button>Download Excel</button>
-</a>
+<div class="card mt-3 p-3">
 
-<br><br>
-
-<table border="1" cellpadding="8">
+<table class="table table-striped">
     <tr>
         <th>Employee</th>
         <th>Date</th>
-        <th>View</th>
+        <th>Action</th>
     </tr>
 
     {% for report in reports %}
     <tr>
-        <td>
-            {% for user in users %}
-                {% if user.id == report.user_id %}
-                    {{ user.username }}
-                {% endif %}
-            {% endfor %}
-        </td>
+        <td>{{ report.user_id }}</td>
         <td>{{ report.date }}</td>
-        <td><a href="/report/{{ report.id }}">View</a></td>
+        <td>
+            <a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a>
+        </td>
     </tr>
     {% endfor %}
-
 </table>
 
-</body>
-</html>
+</div>
+
+{% endblock %}
