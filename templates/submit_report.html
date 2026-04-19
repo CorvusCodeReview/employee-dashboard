@@ -1,94 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Submit Report</title>
+{% extends 'base.html' %}
 
-    <script>
-        function addRow() {
-            let container = document.getElementById("tasks-container");
+{% block content %}
 
-            let newRow = `
-            <div style="margin-bottom:10px;">
-                <label>Task:</label>
-                <select name="task">
-                    {% for task in tasks %}
-                        <option value="{{ task.id }}">
-                            {{ task.name }} - (Typically: {{ task.suggested_time }})
-                        </option>
-                    {% endfor %}
-                </select>
+<h3 class="page-title">Submit Report</h3>
 
-                <label>Time:</label>
-                <input type="text" name="time" placeholder="e.g. 1.5 hrs">
-
-                <label>Notes:</label>
-                <input type="text" name="notes" placeholder="Optional notes">
-            </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', newRow);
-        }
-    </script>
-
-</head>
-<body>
-
-<h2>Submit Daily Report</h2>
+<div class="card p-4">
 
 <form method="POST">
 
-<div id="tasks-container">
+<div id="task-container">
 
-{% if existing_tasks %}
-    {% for row in existing_tasks %}
-        <div style="margin-bottom:10px;">
-            <label>Task:</label>
-            <select name="task">
-                {% for task in tasks %}
-                    <option value="{{ task.id }}"
-                        {% if task.id == row.task_id|int %} selected {% endif %}>
-                        {{ task.name }} - (Typically: {{ task.suggested_time }})
-                    </option>
-                {% endfor %}
-            </select>
+{% for t in existing_tasks or [None] %}
+<div class="row mb-3">
 
-            <label>Time:</label>
-            <input type="text" name="time" value="{{ row.actual_time }}" placeholder="e.g. 1.5 hrs">
-
-            <label>Notes:</label>
-            <input type="text" name="notes" value="{{ row.notes }}" placeholder="Optional notes">
-        </div>
-    {% endfor %}
-{% else %}
-    <div style="margin-bottom:10px;">
-        <label>Task:</label>
-        <select name="task">
+    <div class="col-md-4">
+        <select name="task" class="form-control">
             {% for task in tasks %}
-                <option value="{{ task.id }}">
-                    {{ task.name }} - (Typically: {{ task.suggested_time }})
-                </option>
+            <option value="{{ task.id }}"
+            {% if t and task.id == t.task_id %}selected{% endif %}>
+            {{ task.name }} ({{ task.suggested_time }})
+            </option>
             {% endfor %}
         </select>
-
-        <label>Time:</label>
-        <input type="text" name="time" placeholder="e.g. 1.5 hrs">
-
-        <label>Notes:</label>
-        <input type="text" name="notes" placeholder="Optional notes">
     </div>
-{% endif %}
+
+    <div class="col-md-3">
+        <input name="time" class="form-control"
+        value="{{ t.actual_time if t else '' }}" placeholder="Time">
+    </div>
+
+    <div class="col-md-4">
+        <input name="notes" class="form-control"
+        value="{{ t.notes if t else '' }}" placeholder="Notes">
+    </div>
+
+    <div class="col-md-1">
+        <button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button>
+    </div>
+
+</div>
+{% endfor %}
 
 </div>
 
-<br>
-
-<button type="button" onclick="addRow()">+ Add Task</button>
+<button type="button" class="btn btn-secondary" onclick="addRow()">+ Add Task</button>
 
 <br><br>
 
-<button type="submit">Submit</button>
+<button class="btn btn-primary">Submit</button>
 
 </form>
 
-</body>
-</html>
+</div>
+
+<script>
+function addRow() {
+    let container = document.getElementById('task-container');
+    let row = container.children[0].cloneNode(true);
+
+    row.querySelectorAll('input').forEach(i => i.value = '');
+
+    container.appendChild(row);
+}
+
+function removeRow(btn) {
+    btn.closest('.row').remove();
+}
+</script>
+
+{% endblock %}
