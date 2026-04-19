@@ -16,7 +16,13 @@
     {% for report in reports %}
     <tr>
         <td>{{ report.date }}</td>
-        <td><a href="/report/{{ report.id }}">View</a></td>
+        <td>
+    <a href="/report/{{ report.id }}">View</a>
+
+    {% if report.date == today %}
+        | <a href="/submit_report">Edit</a>
+    {% endif %}
+</td>
     </tr>
     {% endfor %}
 
