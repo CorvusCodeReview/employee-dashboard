@@ -94,6 +94,30 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/setup_users')
+def setup_users():
+
+    # ❌ delete old users
+    User.query.delete()
+    db.session.commit()
+
+    users = [
+        {"username": "employee1", "password": "emp123", "role": "employee"},
+        {"username": "rmajumdar", "password": "ritesh123", "role": "senior"},
+        {"username": "rshirke", "password": "reshma123", "role": "senior"},
+        {"username": "pvishwakarma", "password": "pooja123", "role": "manager"},
+    ]
+
+    for u in users:
+        db.session.add(User(
+            username=u["username"],
+            password=generate_password_hash(u["password"]),  # 🔐 hashed
+            role=u["role"]
+        ))
+
+    db.session.commit()
+
+    return "Users recreated with secure passwords!"
 
 # ------------------ SUBMIT REPORT ------------------
 
