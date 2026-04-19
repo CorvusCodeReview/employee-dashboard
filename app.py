@@ -163,6 +163,9 @@ def submit_report():
 @login_required
 def my_reports():
     reports = Report.query.filter_by(user_id=current_user.id).all()
+    today = str(date.today())
+    return render_template('my_reports.html', reports=reports, today=today)
+    reports = Report.query.filter_by(user_id=current_user.id).all()
     return render_template('my_reports.html', reports=reports)
 
 
