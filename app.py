@@ -5,11 +5,12 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 import pytz
+import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
 
-import os
+# ------------------ DATABASE ------------------
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -33,7 +34,7 @@ def get_ist_date():
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(200))
     role = db.Column(db.String(50))
 
 
@@ -73,12 +74,12 @@ def dashboard():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+
         user = User.query.filter_by(
-            username=request.form['username'],
-            password=request.form['password']
+            username=request.form['username']
         ).first()
 
-        if user:
+        if user and check_password_hash(user.password, request.form['password']):
             login_user(user)
             return redirect(url_for('dashboard'))
 
@@ -109,7 +110,7 @@ def submit_report():
 
     if request.method == 'POST':
 
-        # 🔒 HARD BACKEND LOCK (IST-based)
+        # 🔒 HARD BACKEND LOCK
         if str(get_ist_date()) != today:
             return "Editing past reports is not allowed"
 
@@ -302,10 +303,11 @@ def export_excel():
     return send_file(file_path, as_attachment=True)
 
 
-# ------------------ INIT DATA ------------------
+# ------------------ INIT TABLES ------------------
 
 with app.app_context():
     db.create_all()
+
 
 # ------------------ RUN ------------------
 
