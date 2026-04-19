@@ -10,19 +10,22 @@
 <table border="1" cellpadding="8">
     <tr>
         <th>Date</th>
-        <th>View</th>
+        <th>Actions</th>
     </tr>
 
     {% for report in reports %}
     <tr>
         <td>{{ report.date }}</td>
-        <td>
-    <a href="/report/{{ report.id }}">View</a>
 
-    {% if report.date == today %}
-        | <a href="/submit_report">Edit</a>
-    {% endif %}
-</td>
+        <td>
+            <a href="/report/{{ report.id }}">View</a>
+
+            {% if report.date == today %}
+                | <a href="/submit_report">Edit</a>
+            {% else %}
+                | <span style="color:gray;">Locked</span>
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
 
