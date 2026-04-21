@@ -9,7 +9,7 @@
 
     <div class="col-md-4">
         <label>Employee</label>
-        <select name="user_id" class="form-control">
+        <select name="user_id" class="form-select">
             <option value="">All</option>
             {% for user in users %}
                 <option value="{{ user.id }}" {% if selected_user == user.id|string %}selected{% endif %}>
@@ -21,7 +21,7 @@
 
     <div class="col-md-4">
         <label>Date</label>
-        <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+        <input type="date" name="date" class="form-select" value="{{ selected_date }}">
     </div>
 
     <div class="col-md-4 d-flex align-items-end gap-2">
