@@ -2,68 +2,81 @@
 
 {% block content %}
 
-<h3 class="page-title">Admin Panel</h3>
+<h3 class="page-title">Submit Report</h3>
 
-<!-- ADD USER -->
-<div class="card p-3 mb-3">
+<div class="card p-4">
 
-<h5>Add New User</h5>
+<form method="POST">
 
-<form method="POST" action="/add_user" class="row g-2">
+<div id="task-container">
+
+{% for t in existing_tasks or [None] %}
+<div class="row mb-3">
 
     <div class="col-md-4">
-        <input name="username" class="form-control" placeholder="Username" required>
-    </div>
-
-    <div class="col-md-3">
-        <input name="password" class="form-control" placeholder="Password" required>
-    </div>
-
-    <div class="col-md-3">
-        <select name="role" class="form-control">
-            <option value="employee">Employee</option>
-            <option value="senior">Senior</option>
-            <option value="manager">Manager</option>
+        <select name="task" class="form-control" required>
+            {% for task in tasks %}
+            <option value="{{ task.id }}"
+            {% if t and task.id == t.task_id %}selected{% endif %}>
+            {{ task.name }} ({{ task.suggested_time }})
+            </option>
+            {% endfor %}
         </select>
     </div>
 
-    <div class="col-md-2">
-        <button class="btn btn-primary w-100">Add</button>
+    <div class="col-md-3">
+        <input name="time class="form-control"
+        value="{{ t.actual_time if t else '' }}" placeholder="Time">
     </div>
+
+    <div class="col-md-4">
+        <input name="notes class="form-control"
+        value="{{ t.notes if t else '' }}" placeholder="Notes">
+    </div>
+
+    <div class="col-md-1">
+        <button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button>
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+<button type="button" class="btn btn-secondary" onclick="addRow()">+ Add Task</button>
+
+<br><br>
+
+<button class="btn btn-primary shadow-sm">Submit</button>
 
 </form>
 
 </div>
 
-<!-- USERS TABLE -->
-<div class="card p-3">
+<script>
+function addRow() {
+    let container = document.getElementById('task-container');
+    let firstRow = container.children[0];
+    let row = firstRow.cloneNode(true);
 
-<table class="table table-striped table-hover">
+    // reset select
+    let select = row.querySelector('select');
+    select.selectedIndex = 0;
 
-<tr>
-    <th>Username</th>
-    <th>Role</th>
-    <th>Actions</th>
-</tr>
+    // reset inputs
+    row.querySelectorAll('input').forEach(i => i.value = '');
 
-{% for user in users %}
-<tr>
-    <td>{{ user.username }}</td>
-    <td>{{ user.role }}</td>
-    <td>
+    container.appendChild(row);
+}
 
-        <a href="/reset_user_password/{{ user.id }}" class="btn btn-sm btn-warning">Reset</a>
+function removeRow(btn) {
+    let container = document.getElementById('task-container');
 
-        {% if user.id != current_user.id %}
-        <a href="/delete_user/{{ user.id }}" class="btn btn-sm btn-danger">Delete</a>
-        {% endif %}
-
-    </td>
-</tr>
-{% endfor %}
-
-</table>
-
-</div>
+    // prevent deleting last row
+    if (container.children.length > 1) {
+        btn.closest('.row').remove();
+    }
+}
+</script>
 
 {% endblock %}
