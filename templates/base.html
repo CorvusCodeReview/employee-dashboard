@@ -169,13 +169,8 @@
 
             <li><hr class="dropdown-divider"></li>
 
-            <!-- Common -->
-            <li><a class="dropdown-item" href="/submit_report">Submit Report</a></li>
-            <li><a class="dropdown-item" href="/my_reports">My Reports</a></li>
-
             <!-- Senior + Manager -->
             {% if current_user.role in ['manager','senior'] %}
-            <li><a class="dropdown-item" href="/all_reports">All Reports</a></li>
             <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
             {% endif %}
 
