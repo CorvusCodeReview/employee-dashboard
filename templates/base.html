@@ -6,7 +6,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- FONT (STEP 6) -->
+    <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
@@ -17,32 +17,55 @@
         font-family: 'Inter', sans-serif;
     }
 
-    /* NAVBAR */
+    /* NAVBAR (THEME APPLIED) */
+    .custom-nav {
+        background: #0c1f47;
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
     .nav-link {
-        color: #444;
-        margin-right: 12px;
+        color: white !important;
+        margin-right: 14px;
         font-weight: 500;
         transition: 0.2s;
     }
 
     .nav-link:hover {
         text-decoration: underline;
-        color: #000;
+        opacity: 0.8;
     }
 
-    /* CARDS (STEP 5) */
+    /* CARDS (THEMED) */
     .card {
         border-radius: 12px !important;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: all 0.2s ease;
+        border: 1px solid #e6eaf2;
+        background: #ffffff;
+        box-shadow: 0 6px 18px rgba(12,31,71,0.06);
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* subtle left accent */
+    .card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: #0c1f47;
+        opacity: 0.08;
     }
 
     .card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(12,31,71,0.12);
     }
 
-    /* BUTTONS (STEP 3) */
+    /* BUTTONS */
     button,
     .btn {
         border-radius: 8px !important;
@@ -53,19 +76,19 @@
     }
 
     .btn-primary {
-        background-color: #4f46e5 !important;
+        background-color: #0c1f47 !important;
         border: none;
     }
 
     .btn-primary:hover {
-        background-color: #4338ca !important;
+        background-color: #16326e !important;
     }
 
     .btn-danger {
         padding: 5px 10px !important;
     }
 
-    /* TABLES (STEP 4) */
+    /* TABLES */
     table {
         border-radius: 10px;
         overflow: hidden;
@@ -80,12 +103,24 @@
         background-color: #f3f4f6;
     }
 
+    table th {
+        background: #f1f4fa;
+        color: #0c1f47;
+        font-weight: 600;
+    }
+
     /* INPUTS */
     .form-control {
         border-radius: 8px;
     }
 
-    /* FLASH (CENTERED + AUTO DISMISS) */
+    /* PAGE TITLE */
+    .page-title {
+        color: #0c1f47;
+        font-weight: 600;
+    }
+
+    /* FLASH (CENTERED) */
     #flash-container {
         position: fixed;
         top: 20px;
@@ -109,10 +144,10 @@
 
 <body>
 
-<!-- NAVBAR -->
 <div class="container mt-3">
 
-    <div class="mb-3">
+    <!-- NAVBAR -->
+    <div class="custom-nav">
 
         <a class="nav-link d-inline" href="/">Dashboard</a>
         <a class="nav-link d-inline" href="/submit_report">Submit Report</a>
