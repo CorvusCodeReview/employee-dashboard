@@ -28,21 +28,17 @@ login_manager.login_message = None
 @app.before_request
 def force_password_change():
 
-    # ✅ FIRST check authentication
+    # FIRST check authentication
     if not current_user.is_authenticated:
         return
 
-    # ✅ allow manager to bypass (temporary)
-    if current_user.role == 'manager':
-        return
-
-    # ✅ allow these routes
+    # allow these routes
     allowed_routes = ['change_password', 'logout', 'login', 'static']
 
     if request.endpoint in allowed_routes:
         return
 
-    # ✅ enforce password change
+    # enforce password change
     if current_user.must_change_password:
         return redirect(url_for('change_password'))
 
