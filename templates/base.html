@@ -74,6 +74,9 @@
 
         {% if current_user.role in ['manager','senior'] %}
             <a class="nav-link d-inline" href="/all_reports">All Reports</a>
+        {% endif %}
+
+        {% if current_user.role == 'manager' %}
             <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
         {% endif %}
 
