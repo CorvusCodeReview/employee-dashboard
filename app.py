@@ -317,6 +317,88 @@ def manage_tasks():
     tasks = Task.query.all()
     return render_template('manage_tasks.html', tasks=tasks)
 
+# ------------------ ADMIN PANEL ------------------
+
+@app.route('/admin')
+@login_required
+def admin():
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    users = User.query.all()
+    return render_template('admin.html', users=users)
+
+
+@app.route('/add_user', methods=['POST'])
+@login_required
+def add_user():
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    username = request.form['username']
+    password = generate_password_hash(request.form['password'])
+    role = request.form['role']
+
+    # prevent duplicate usernames
+    existing = User.query.filter_by(username=username).first()
+    if existing:
+        flash("User already exists", "danger")
+        return redirect(url_for('admin'))
+
+    new_user = User(
+        username=username,
+        password=password,
+        role=role,
+        must_change_password=True
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash("User added successfully!", "success")
+    return redirect(url_for('admin'))
+
+
+@app.route('/delete_user/<int:user_id>')
+@login_required
+def delete_user(user_id):
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    user = User.query.get(user_id)
+
+    # prevent deleting yourself
+    if user.id == current_user.id:
+        flash("You cannot delete yourself", "warning")
+        return redirect(url_for('admin'))
+
+    db.session.delete(user)
+    db.session.commit()
+
+    flash("User deleted", "success")
+    return redirect(url_for('admin'))
+
+
+@app.route('/reset_user_password/<int:user_id>')
+@login_required
+def reset_user_password(user_id):
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    user = User.query.get(user_id)
+
+    user.password = generate_password_hash("temp123")
+    user.must_change_password = True
+
+    db.session.commit()
+
+    flash("Password reset to temp123", "warning")
+    return redirect(url_for('admin'))
+
 # ------------------ EXPORT ------------------
 
 @app.route('/export')
