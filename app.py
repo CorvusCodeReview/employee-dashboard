@@ -252,7 +252,7 @@ def all_reports():
         query = query.filter_by(user_id=selected_user)
 
     if selected_date:
-        query = query.filter_by(date=selected_date)
+        query = query.filter(Report.date.like(f"%{selected_date}%"))
 
     reports = query.all()
     users = User.query.all()
