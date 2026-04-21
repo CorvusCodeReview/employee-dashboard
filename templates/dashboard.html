@@ -1,38 +1,37 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
 <h3 class="page-title">Dashboard</h3>
 
 <div class="card p-4 mb-4">
     <h5>Welcome, {{ current_user.username }}</h5>
-    <p class="text-muted">Role: {{ current_user.role }}</p>
+    <small class="text-muted">Role: {{ current_user.role }}</small>
 </div>
 
 <div class="row g-3">
 
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <h6>Submit Report</h6>
-            <a href="/submit_report" class="btn btn-primary mt-2">Open</a>
-        </div>
+<div class="col-md-4">
+    <div class="card p-3 text-center">
+        <h6>Submit Report</h6>
+        <a href="/submit_report" class="btn btn-primary mt-2">Open</a>
     </div>
+</div>
 
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <h6>My Reports</h6>
-            <a href="/my_reports" class="btn btn-primary mt-2">View</a>
-        </div>
+<div class="col-md-4">
+    <div class="card p-3 text-center">
+        <h6>My Reports</h6>
+        <a href="/my_reports" class="btn btn-primary mt-2">View</a>
     </div>
+</div>
 
-    {% if current_user.role in ['manager','senior'] %}
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <h6>All Reports</h6>
-            <a href="/all_reports" class="btn btn-primary mt-2">Open</a>
-        </div>
+{% if current_user.role in ['manager','senior'] %}
+<div class="col-md-4">
+    <div class="card p-3 text-center">
+        <h6>All Reports</h6>
+        <a href="/all_reports" class="btn btn-primary mt-2">Open</a>
     </div>
-    {% endif %}
+</div>
+{% endif %}
 
 </div>
 
