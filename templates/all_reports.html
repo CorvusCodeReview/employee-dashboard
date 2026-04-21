@@ -24,8 +24,15 @@
         <input type="date" name="date" class="form-control" value="{{ selected_date }}">
     </div>
 
-    <div class="col-md-4 d-flex align-items-end">
+    <div class="col-md-4 d-flex align-items-end gap-2">
         <button class="btn btn-primary">Filter</button>
+
+        <!-- ✅ EXPORT BUTTON WITH POPUP -->
+        <a href="/export?user_id={{ selected_user }}&date={{ selected_date }}"
+           class="btn btn-success"
+           onclick="alert('Export started. File will download shortly!')">
+           Export
+        </a>
     </div>
 
 </form>
@@ -41,19 +48,30 @@
     <th>Action</th>
 </tr>
 
-{% for report in reports %}
-<tr>
-    <td>
-        {% for user in users %}
-            {% if user.id == report.user_id %}
-                {{ user.username }}
-            {% endif %}
-        {% endfor %}
-    </td>
-    <td>{{ report.date }}</td>
-    <td><a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a></td>
-</tr>
-{% endfor %}
+{% if reports %}
+    {% for report in reports %}
+    <tr>
+        <td>
+            {% for user in users %}
+                {% if user.id == report.user_id %}
+                    {{ user.username }}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td>{{ report.date }}</td>
+        <td>
+            <a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+{% else %}
+    <!-- ✅ EMPTY STATE -->
+    <tr>
+        <td colspan="3" class="text-center text-muted">
+            No reports found
+        </td>
+    </tr>
+{% endif %}
 
 </table>
 
