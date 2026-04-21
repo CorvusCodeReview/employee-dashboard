@@ -22,11 +22,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ✅ REMOVE DEFAULT LOGIN MESSAGE
+# ✅ FIX 1: REMOVE DEFAULT LOGIN MESSAGE
 login_manager.login_message = None
 
 
-# ✅ ADD THIS BLOCK (VERY IMPORTANT)
+# ✅ FIX 2: ADD BEFORE REQUEST (CORRECT PLACEMENT)
 @app.before_request
 def force_password_change():
 
@@ -121,3 +121,185 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route('/setup_users')
+def setup_users():
+
+    User.query.delete()
+
+    users = [
+        User(username="pvishwakarma", password=generate_password_hash("pooja123"), role="manager", must_change_password=True),
+        User(username="rshirke", password=generate_password_hash("reshma123"), role="senior", must_change_password=True),
+        User(username="rmajumdar", password=generate_password_hash("ritesh123"), role="senior", must_change_password=True),
+        User(username="kmane", password=generate_password_hash("kedar123"), role="employee", must_change_password=True)
+    ]
+
+    db.session.add_all(users)
+    db.session.commit()
+
+    return "Users created successfully!"
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+
+    if request.method == 'POST':
+
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+
+        if not check_password_hash(current_user.password, current_password):
+            return render_template('change_password.html', error="Current password incorrect")
+
+        current_user.password = generate_password_hash(new_password)
+        current_user.must_change_password = False
+
+        db.session.commit()
+
+        flash("Password updated successfully!", "success")
+        return redirect(url_for('dashboard'))
+
+    return render_template('change_password.html')
+
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+
+    error = None
+
+    if request.method == 'POST':
+        username = request.form['username']
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            error = "User not found"
+        else:
+            user.password = generate_password_hash("temp123")
+            user.must_change_password = True
+            db.session.commit()
+            return "Password reset to temp123. Please login and change password."
+
+    return render_template('reset_password.html', error=error)
+
+
+# ------------------ SUBMIT REPORT ------------------
+
+@app.route('/submit_report', methods=['GET', 'POST'])
+@login_required
+def submit_report():
+
+    today = str(get_ist_date())
+
+    existing_report = Report.query.filter_by(user_id=current_user.id, date=today).first()
+
+    if request.method == 'POST':
+
+        task_ids = request.form.getlist('task')
+        times = request.form.getlist('time')
+        notes_list = request.form.getlist('notes')
+
+        if existing_report:
+            ReportTask.query.filter_by(report_id=existing_report.id).delete()
+
+            for i in range(len(task_ids)):
+                if times[i]:
+                    db.session.add(ReportTask(report_id=existing_report.id, task_id=task_ids[i], actual_time=times[i], notes=notes_list[i]))
+
+            db.session.commit()
+            flash("Report updated successfully!", "success")
+            return redirect(url_for('dashboard'))
+
+        else:
+            report = Report(user_id=current_user.id, date=today)
+            db.session.add(report)
+            db.session.commit()
+
+            for i in range(len(task_ids)):
+                if times[i]:
+                    db.session.add(ReportTask(report_id=report.id, task_id=task_ids[i], actual_time=times[i], notes=notes_list[i]))
+
+            db.session.commit()
+            flash("Report submitted successfully!", "success")
+            return redirect(url_for('dashboard'))
+
+    tasks = Task.query.all()
+    existing_tasks = ReportTask.query.filter_by(report_id=existing_report.id).all() if existing_report else []
+
+    return render_template('submit_report.html', tasks=tasks, existing_tasks=existing_tasks)
+
+
+# ------------------ MY REPORTS ------------------
+
+@app.route('/my_reports')
+@login_required
+def my_reports():
+    reports = Report.query.filter_by(user_id=current_user.id).all()
+    today = str(get_ist_date())
+    return render_template('my_reports.html', reports=reports, today=today)
+
+
+# ------------------ ALL REPORTS ------------------
+
+@app.route('/all_reports')
+@login_required
+def all_reports():
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    selected_user = request.args.get('user_id')
+    selected_date = request.args.get('date')
+
+    query = Report.query
+
+    if selected_user:
+        query = query.filter_by(user_id=selected_user)
+
+    if selected_date:
+        query = query.filter_by(date=selected_date)
+
+    reports = query.all()
+    users = User.query.all()
+
+    return render_template('all_reports.html', reports=reports, users=users, selected_user=selected_user, selected_date=selected_date)
+
+
+# ------------------ EXPORT ------------------
+
+@app.route('/export')
+@login_required
+def export_excel():
+
+    if current_user.role not in ['manager', 'senior']:
+        return "Access Denied"
+
+    reports = Report.query.all()
+    data = []
+
+    for report in reports:
+        user = User.query.get(report.user_id)
+        tasks = ReportTask.query.filter_by(report_id=report.id).all()
+
+        for t in tasks:
+            task_name = Task.query.get(t.task_id).name
+            data.append({"Employee": user.username, "Date": report.date, "Task": task_name, "Time": t.actual_time, "Notes": t.notes})
+
+    df = pd.DataFrame(data)
+    file_path = "report.xlsx"
+    df.to_excel(file_path, index=False)
+
+    flash("Excel exported successfully!", "success")
+
+    return send_file(file_path, as_attachment=True)
+
+
+# ------------------ INIT ------------------
+
+with app.app_context():
+    db.create_all()
+
+
+if __name__ == '__main__':
+    app.run()
