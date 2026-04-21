@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h3>Report Details</h3>
+<h3 class="page-title">Report Details</h3>
 
 <div class="card p-3 mt-3">
 
@@ -13,20 +13,28 @@
 
 <div class="card mt-3 p-3">
 
-<table class="table table-bordered">
+<table class="table table-bordered table-hover">
     <tr>
         <th>Task</th>
         <th>Time</th>
         <th>Notes</th>
     </tr>
 
-    {% for t in tasks %}
-    <tr>
-        <td>{{ task_names[t.task_id] }}</td>
-        <td>{{ t.actual_time }}</td>
-        <td>{{ t.notes }}</td>
-    </tr>
-    {% endfor %}
+    {% if tasks %}
+        {% for t in tasks %}
+        <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.time }}</td>
+            <td>{{ t.notes }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">
+                No tasks found
+            </td>
+        </tr>
+    {% endif %}
 </table>
 
 </div>
