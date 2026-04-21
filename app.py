@@ -22,11 +22,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ✅ FIX 1: REMOVE DEFAULT LOGIN MESSAGE
 login_manager.login_message = None
 
 
-# ✅ FIX 2: ADD BEFORE REQUEST (CORRECT PLACEMENT)
 @app.before_request
 def force_password_change():
 
@@ -121,24 +119,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-
-@app.route('/setup_users')
-def setup_users():
-
-    User.query.delete()
-
-    users = [
-        User(username="pvishwakarma", password=generate_password_hash("pooja123"), role="manager", must_change_password=True),
-        User(username="rshirke", password=generate_password_hash("reshma123"), role="senior", must_change_password=True),
-        User(username="rmajumdar", password=generate_password_hash("ritesh123"), role="senior", must_change_password=True),
-        User(username="kmane", password=generate_password_hash("kedar123"), role="employee", must_change_password=True)
-    ]
-
-    db.session.add_all(users)
-    db.session.commit()
-
-    return "Users created successfully!"
 
 
 @app.route('/change_password', methods=['GET', 'POST'])
