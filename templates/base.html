@@ -3,128 +3,155 @@
 <head>
     <title>Employee Dashboard</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FONT (STEP 6) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
 
-        body {
-            background: #f5f7fb;
-            font-family: 'Inter', sans-serif;
-       }
+    /* GLOBAL */
+    body {
+        background: #f5f7fb;
+        font-family: 'Inter', sans-serif;
+    }
 
-        /* CARD STYLE */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
+    /* NAVBAR */
+    .nav-link {
+        color: #444;
+        margin-right: 12px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
 
-        /* PAGE TITLE */
-        .page-title {
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
+    .nav-link:hover {
+        text-decoration: underline;
+        color: #000;
+    }
 
-        /* BUTTONS */
-        .btn {
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-weight: 500;
-        }
+    /* CARDS (STEP 5) */
+    .card {
+        border-radius: 12px !important;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
 
-        /* PRIMARY BUTTON */
-        .btn-primary {
-            background: #4f46e5;
-            border: none;
-        }
+    .card:hover {
+        transform: translateY(-3px);
+    }
 
-        .btn-primary:hover {
-            background: #4338ca;
-        }
+    /* BUTTONS (STEP 3) */
+    button,
+    .btn {
+        border-radius: 8px !important;
+        padding: 6px 14px !important;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
 
-        /* NAV LINKS */
-        .nav-link {
-            color: #444;
-            margin-right: 10px;
-            transition: 0.2s;
-        }
+    .btn-primary {
+        background-color: #4f46e5 !important;
+        border: none;
+    }
 
-        .nav-link:hover {
-            text-decoration: underline;
-            color: #000;
-        }
+    .btn-primary:hover {
+        background-color: #4338ca !important;
+    }
 
-        /* TABLE */
-        .table {
-            border-radius: 10px;
-            overflow: hidden;
-        }
+    .btn-danger {
+        padding: 5px 10px !important;
+    }
 
-        /* INPUTS */
-        .form-control {
-            border-radius: 8px;
-        }
+    /* TABLES (STEP 4) */
+    table {
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 14px;
+    }
 
-        /* HOVER EFFECT FOR CARDS */
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
+    table tr {
+        vertical-align: middle;
+    }
 
-    </style>
-</head>
+    table tbody tr:hover {
+        background-color: #f3f4f6;
+    }
 
-<body>
+    /* INPUTS */
+    .form-control {
+        border-radius: 8px;
+    }
 
-<nav class="navbar d-flex justify-content-between">
-    <a class="navbar-brand" href="/">Employee Dashboard</a>
-
-    <div>
-        <a class="nav-link d-inline" href="/submit_report">Submit</a>
-        <a class="nav-link d-inline" href="/my_reports">My Reports</a>
-
-        {% if current_user.role in ['manager','senior'] %}
-            <a class="nav-link d-inline" href="/all_reports">All Reports</a>
-        {% endif %}
-
-        {% if current_user.role == 'manager' %}
-            <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
-        {% endif %}
-
-        {% if current_user.role in ['manager','senior'] %}
-            <a class="nav-link d-inline" href="/admin">Admin</a>
-        {% endif %}
-
-        <a class="nav-link d-inline" href="/change_password">Change Password</a>
-        <a class="nav-link d-inline" href="/logout">Logout</a>
-    </div>
-</nav>
-
-    <div class="container mt-4">
-        <div id="flash-container" style="
+    /* FLASH (CENTERED + AUTO DISMISS) */
+    #flash-container {
         position: fixed;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
-        max-width: 320px;
-    ">
+        max-width: 350px;
+        width: 100%;
+    }
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} shadow-sm flash-msg" 
-               style="padding: 10px 15px; font-size: 14px; margin-bottom: 10px;">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    .flash-msg {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="container mt-3">
+
+    <div class="mb-3">
+
+        <a class="nav-link d-inline" href="/">Dashboard</a>
+        <a class="nav-link d-inline" href="/submit_report">Submit Report</a>
+        <a class="nav-link d-inline" href="/my_reports">My Reports</a>
+
+        {% if current_user.role in ['manager','senior'] %}
+        <a class="nav-link d-inline" href="/all_reports">All Reports</a>
+        <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
+        <a class="nav-link d-inline" href="/admin">Admin</a>
+        {% endif %}
+
+        <a class="nav-link d-inline" href="/change_password">Change Password</a>
+        <a class="nav-link d-inline text-danger" href="/logout">Logout</a>
 
     </div>
+
+</div>
+
+<!-- FLASH -->
+<div id="flash-container">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} shadow-sm flash-msg">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container mt-4">
     {% block content %}{% endblock %}
-    </div>
+</div>
 
+<!-- AUTO DISMISS FLASH -->
 <script>
 setTimeout(() => {
     document.querySelectorAll('.flash-msg').forEach(el => {
@@ -135,6 +162,6 @@ setTimeout(() => {
     });
 }, 5000);
 </script>
-    
+
 </body>
 </html>
