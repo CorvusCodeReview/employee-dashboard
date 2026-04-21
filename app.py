@@ -3,6 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import flash
 import pandas as pd
 import pytz
 import os
@@ -190,7 +191,8 @@ def submit_report():
                 ))
 
             db.session.commit()
-            return "Report updated successfully!"
+            flash("Report updated successfully!", "success")
+            return redirect(url_for('dashboard'))
 
         else:
             report = Report(user_id=current_user.id, date=today)
@@ -209,7 +211,8 @@ def submit_report():
                 ))
 
             db.session.commit()
-            return "Report submitted successfully!"
+            flash("Report submitted successfully!", "success")
+            return redirect(url_for('dashboard'))
 
     tasks = Task.query.all()
 
@@ -354,6 +357,8 @@ def export_excel():
     df = pd.DataFrame(data)
     file_path = "report.xlsx"
     df.to_excel(file_path, index=False)
+
+    flash("Excel exported successfully!", "success")
 
     return send_file(file_path, as_attachment=True)
 
