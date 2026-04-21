@@ -155,8 +155,11 @@
 
         {% if current_user.role in ['manager','senior'] %}
         <a class="nav-link d-inline" href="/all_reports">All Reports</a>
-        <a class="nav-link d-inline" href="/manage_tasks">Tasks</a>
         <a class="nav-link d-inline" href="/admin">Admin</a>
+        {% endif %}
+
+        {% if current_user.role == 'manager' %}
+        <a class="nav-link d-inline text-white" href="/manage_tasks">Tasks</a>
         {% endif %}
 
         <a class="nav-link d-inline" href="/change_password">Change Password</a>
