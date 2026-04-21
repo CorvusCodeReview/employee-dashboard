@@ -187,13 +187,13 @@ def submit_report():
             ReportTask.query.filter_by(report_id=existing_report.id).delete()
 
             for i in range(len(task_ids)):
-        if task_ids[i] and times[i]:
-            db.session.add(ReportTask(
-            report_id=report.id if not existing_report else existing_report.id,
-            task_id=task_ids[i],
-            actual_time=times[i],
-            notes=notes_list[i]
-        ))
+                if task_ids[i] and times[i]:
+                    db.session.add(ReportTask(
+                        report_id=existing_report.id,
+                        task_id=task_ids[i],
+                        actual_time=times[i],
+                        notes=notes_list[i]
+                    ))
 
             db.session.commit()
             flash("Report updated successfully!", "success")
@@ -205,13 +205,13 @@ def submit_report():
             db.session.commit()
 
             for i in range(len(task_ids)):
-        if task_ids[i] and times[i]:
-            db.session.add(ReportTask(
-            report_id=report.id if not existing_report else existing_report.id,
-            task_id=task_ids[i],
-            actual_time=times[i],
-            notes=notes_list[i]
-        ))
+                if task_ids[i] and times[i]:
+                    db.session.add(ReportTask(
+                        report_id=report.id,
+                        task_id=task_ids[i],
+                        actual_time=times[i],
+                        notes=notes_list[i]
+                    ))
 
             db.session.commit()
             flash("Report submitted successfully!", "success")
