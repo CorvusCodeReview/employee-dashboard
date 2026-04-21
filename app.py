@@ -248,6 +248,40 @@ def all_reports():
 
     return render_template('all_reports.html', reports=reports, users=users, selected_user=selected_user, selected_date=selected_date)
 
+# ------------------ REPORT DETAILS ------------------
+
+@app.route('/report/<int:report_id>')
+@login_required
+def report_details(report_id):
+
+    report = Report.query.get_or_404(report_id)
+
+    # 🔒 Access control
+    if current_user.role not in ['manager', 'senior'] and report.user_id != current_user.id:
+        return "Access Denied"
+
+    tasks = ReportTask.query.filter_by(report_id=report.id).all()
+    user = User.query.get(report.user_id)
+
+    detailed_tasks = []
+
+    for t in tasks:
+        task = Task.query.get(t.task_id)
+
+        if task:
+            detailed_tasks.append({
+                "name": task.name,
+                "time": t.actual_time,
+                "notes": t.notes
+            })
+
+    return render_template(
+        'report_details.html',
+        report=report,
+        user=user,
+        tasks=detailed_tasks
+    )
+
 # ------------------ MANAGE TASKS ------------------
 
 @app.route('/manage_tasks', methods=['GET', 'POST'])
