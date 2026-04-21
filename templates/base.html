@@ -87,7 +87,8 @@
         <div id="flash-container" style="
         position: fixed;
         top: 20px;
-        right: 20px;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 9999;
         max-width: 320px;
     ">
@@ -110,11 +111,12 @@
 <script>
 setTimeout(() => {
     document.querySelectorAll('.flash-msg').forEach(el => {
-        el.style.transition = "opacity 0.5s ease";
+        el.style.transition = "all 0.6s ease";
         el.style.opacity = "0";
-        setTimeout(() => el.remove(), 500);
+        el.style.transform = "translateY(-10px)";
+        setTimeout(() => el.remove(), 600);
     });
-}, 3000);
+}, 5000);
 </script>
     
 </body>
