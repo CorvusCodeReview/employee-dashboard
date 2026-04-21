@@ -147,28 +147,53 @@
 <div class="container mt-3">
 
     <!-- NAVBAR -->
-    <div class="custom-nav">
+    <div class="custom-nav d-flex justify-content-between align-items-center">
 
+    <!-- LEFT SIDE -->
+    <div>
         <a class="nav-link d-inline" href="/">Dashboard</a>
-        <a class="nav-link d-inline" href="/submit_report">Submit Report</a>
-        <a class="nav-link d-inline" href="/my_reports">My Reports</a>
+    </div>
 
-        {% if current_user.role in ['manager','senior'] %}
-        <a class="nav-link d-inline" href="/all_reports">All Reports</a>
-        <a class="nav-link d-inline" href="/admin">Admin</a>
-        {% endif %}
+    <!-- RIGHT SIDE (PROFILE DROPDOWN) -->
+    <div class="dropdown">
 
-        {% if current_user.role == 'manager' %}
-        <a class="nav-link d-inline text-white" href="/manage_tasks">Tasks</a>
-        {% endif %}
+        <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+            {{ current_user.username }}
+        </button>
 
-        <a class="nav-link d-inline" href="/change_password">Change Password</a>
-        <a class="nav-link d-inline text-danger" href="/logout">Logout</a>
+        <ul class="dropdown-menu dropdown-menu-end">
 
+            <li class="dropdown-item text-muted small">
+                {{ current_user.role|capitalize }}
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <!-- Common -->
+            <li><a class="dropdown-item" href="/submit_report">Submit Report</a></li>
+            <li><a class="dropdown-item" href="/my_reports">My Reports</a></li>
+
+            <!-- Senior + Manager -->
+            {% if current_user.role in ['manager','senior'] %}
+            <li><a class="dropdown-item" href="/all_reports">All Reports</a></li>
+            <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
+            {% endif %}
+
+            <!-- Manager only -->
+            {% if current_user.role == 'manager' %}
+            <li><a class="dropdown-item" href="/manage_tasks">Tasks</a></li>
+            {% endif %}
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li><a class="dropdown-item" href="/change_password">Change Password</a></li>
+            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+
+        </ul>
     </div>
 
 </div>
-
+    
 <!-- FLASH -->
 <div id="flash-container">
 
