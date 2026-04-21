@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<h3>All Reports</h3>
+<h3 class="page-title">All Reports</h3>
 
-<div class="card p-3 mt-3">
+<div class="card p-3">
 
 <form method="GET" class="row g-3">
 
     <div class="col-md-4">
-        <label>Filter by Employee</label>
+        <label>Employee</label>
         <select name="user_id" class="form-control">
             <option value="">All</option>
             {% for user in users %}
-                <option value="{{ user.id }}"
-                {% if selected_user == user.id|string %}selected{% endif %}>
+                <option value="{{ user.id }}" {% if selected_user == user.id|string %}selected{% endif %}>
                     {{ user.username }}
                 </option>
             {% endfor %}
@@ -22,13 +20,12 @@
     </div>
 
     <div class="col-md-4">
-        <label>Filter by Date</label>
+        <label>Date</label>
         <input type="date" name="date" class="form-control" value="{{ selected_date }}">
     </div>
 
     <div class="col-md-4 d-flex align-items-end">
         <button class="btn btn-primary">Filter</button>
-        <a href="/export?user_id={{ selected_user }}&date={{ selected_date }}" class="btn btn-success ms-2">Export</a>
     </div>
 
 </form>
@@ -37,28 +34,27 @@
 
 <div class="card mt-3 p-3">
 
-<table class="table table-striped">
-    <tr>
-        <th>Employee</th>
-        <th>Date</th>
-        <th>Action</th>
-    </tr>
+<table class="table table-hover">
+<tr>
+    <th>Employee</th>
+    <th>Date</th>
+    <th>Action</th>
+</tr>
 
-    {% for report in reports %}
-    <tr>
-        <td>
-            {% for user in users %}
-                {% if user.id == report.user_id %}
-                    {{ user.username }}
-                {% endif %}
-            {% endfor %}
-        </td>
-        <td>{{ report.date }}</td>
-        <td>
-            <a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a>
-        </td>
-    </tr>
-    {% endfor %}
+{% for report in reports %}
+<tr>
+    <td>
+        {% for user in users %}
+            {% if user.id == report.user_id %}
+                {{ user.username }}
+            {% endif %}
+        {% endfor %}
+    </td>
+    <td>{{ report.date }}</td>
+    <td><a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a></td>
+</tr>
+{% endfor %}
+
 </table>
 
 </div>
