@@ -14,7 +14,7 @@
 <div class="row mb-3">
 
     <div class="col-md-4">
-        <select name="task" class="form-control">
+        <select name="task" class="form-control" required>
             {% for task in tasks %}
             <option value="{{ task.id }}"
             {% if t and task.id == t.task_id %}selected{% endif %}>
@@ -56,15 +56,26 @@
 <script>
 function addRow() {
     let container = document.getElementById('task-container');
-    let row = container.children[0].cloneNode(true);
+    let firstRow = container.children[0];
+    let row = firstRow.cloneNode(true);
 
+    // reset select
+    let select = row.querySelector('select');
+    select.selectedIndex = 0;
+
+    // reset inputs
     row.querySelectorAll('input').forEach(i => i.value = '');
 
     container.appendChild(row);
 }
 
 function removeRow(btn) {
-    btn.closest('.row').remove();
+    let container = document.getElementById('task-container');
+
+    // prevent deleting last row
+    if (container.children.length > 1) {
+        btn.closest('.row').remove();
+    }
 }
 </script>
 
