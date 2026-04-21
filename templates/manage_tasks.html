@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<h3>Manage Tasks</h3>
+<h3 class="page-title">Manage Tasks</h3>
 
 <div class="card p-3 mt-3">
 
+{% if current_user.role == 'manager' %}
 <form method="POST" class="row g-3">
 
     <div class="col-md-5">
@@ -13,7 +14,7 @@
     </div>
 
     <div class="col-md-5">
-        <input name="time" class="form-control" placeholder="Estimated time" required>
+        <input name="suggested_time" class="form-control" placeholder="Estimated time (e.g. 2 hrs)" required>
     </div>
 
     <div class="col-md-2">
@@ -21,23 +22,32 @@
     </div>
 
 </form>
+{% endif %}
 
 </div>
 
 <div class="card mt-3 p-3">
 
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <tr>
         <th>Task</th>
         <th>Estimated Time</th>
     </tr>
 
-    {% for task in tasks %}
-    <tr>
-        <td>{{ task.name }}</td>
-        <td>{{ task.suggested_time }}</td>
-    </tr>
-    {% endfor %}
+    {% if tasks %}
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.suggested_time }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="2" class="text-center text-muted">
+                No tasks added yet
+            </td>
+        </tr>
+    {% endif %}
 </table>
 
 </div>
