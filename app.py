@@ -88,7 +88,6 @@ def login():
 
             # ✅ FORCE PASSWORD CHANGE
             if user.must_change_password:
-                flash("Please change your password", "warning")
                 return redirect(url_for('change_password'))
 
             return redirect(url_for('dashboard'))
