@@ -28,14 +28,15 @@ login_manager.login_message = None
 @app.before_request
 def force_password_change():
 
-    # FIRST check authentication
+    # if user not logged in → allow
     if not current_user.is_authenticated:
         return
 
-    # allow these routes
+    # allowed routes
     allowed_routes = ['change_password', 'logout', 'login', 'static']
 
-    if request.endpoint in allowed_routes:
+    # ✅ FIX: handle None endpoint safely
+    if not request.endpoint or request.endpoint in allowed_routes:
         return
 
     # enforce password change
