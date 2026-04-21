@@ -83,19 +83,39 @@
     </div>
 </nav>
 
-<div class="container mt-4">
+    <div class="container mt-4">
+        <div id="flash-container" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 320px;
+    ">
+
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-success alert-dismissible fade show mt-2">
+          <div class="alert alert-{{ category }} shadow-sm flash-msg" 
+               style="padding: 10px 15px; font-size: 14px; margin-bottom: 10px;">
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
-    {% block content %}{% endblock %}
-</div>
 
+    </div>
+    {% block content %}{% endblock %}
+    </div>
+
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.flash-msg').forEach(el => {
+        el.style.transition = "opacity 0.5s ease";
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 500);
+    });
+}, 3000);
+</script>
+    
 </body>
 </html>
