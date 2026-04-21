@@ -35,8 +35,9 @@ def get_ist_date():
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(255))
+    password = db.Column(db.String(200))
     role = db.Column(db.String(50))
+    must_change_password = db.Column(db.Boolean, default=True)
 
 
 class Task(db.Model):
@@ -84,24 +85,18 @@ def login():
 
         if user and check_password_hash(user.password, request.form['password']):
             login_user(user)
+
+            # ✅ FORCE PASSWORD CHANGE
+            if user.must_change_password:
+                flash("Please change your password", "warning")
+                return redirect(url_for('change_password'))
+
             return redirect(url_for('dashboard'))
+
         else:
             error = "Invalid username or password"
 
     return render_template('login.html', error=error)
-    if request.method == 'POST':
-
-        user = User.query.filter_by(
-            username=request.form['username']
-        ).first()
-
-        if user and check_password_hash(user.password, request.form['password']):
-            login_user(user)
-            return redirect(url_for('dashboard'))
-
-    return render_template('login.html', error="Invalid username or password")
-
-    return render_template('login.html')
 
 
 @app.route('/logout')
@@ -119,15 +114,17 @@ def change_password():
         current_password = request.form['current_password']
         new_password = request.form['new_password']
 
-        # verify current password
         if not check_password_hash(current_user.password, current_password):
-            return "Current password is incorrect"
+            return render_template('change_password.html', error="Current password incorrect")
 
-        # update password
         current_user.password = generate_password_hash(new_password)
+
+        current_user.must_change_password = False
+
         db.session.commit()
 
-        return "Password updated successfully!"
+        flash("Password updated successfully!", "success")
+        return redirect(url_for('dashboard'))
 
     return render_template('change_password.html')
 
@@ -145,6 +142,7 @@ def reset_password():
             error = "User not found"
         else:
             user.password = generate_password_hash("temp123")
+            user.must_change_password = True
             db.session.commit()
             return "Password reset to temp123. Please login and change password."
 
