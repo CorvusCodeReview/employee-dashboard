@@ -454,6 +454,53 @@ def add_region():
     flash("Region added successfully", "success")
     return redirect(url_for('admin'))
 
+@app.route('/delete_task/<int:id>')
+@login_required
+def delete_task(id):
+    if current_user.role != 'manager':
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
+
+    task = Task.query.get(id)
+    if task:
+        db.session.delete(task)
+        db.session.commit()
+        flash("Task deleted", "success")
+
+    return redirect(url_for('manage_tasks'))
+
+
+@app.route('/delete_client/<int:id>')
+@login_required
+def delete_client(id):
+    if current_user.role != 'manager':
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
+
+    client = Client.query.get(id)
+    if client:
+        db.session.delete(client)
+        db.session.commit()
+        flash("Client deleted", "success")
+
+    return redirect(url_for('admin'))
+
+
+@app.route('/delete_region/<int:id>')
+@login_required
+def delete_region(id):
+    if current_user.role != 'manager':
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
+
+    region = Region.query.get(id)
+    if region:
+        db.session.delete(region)
+        db.session.commit()
+        flash("Region deleted", "success")
+
+    return redirect(url_for('admin'))
+
 # ------------------ EXPORT ------------------
 
 @app.route('/export')
