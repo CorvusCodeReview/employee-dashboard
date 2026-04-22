@@ -67,26 +67,26 @@
 </div>
 
 <!-- MANAGE CLIENTS AND REGIONS -->
+{% if current_user.role == 'manager' %}
+
 <div class="card p-3 mt-3">
+    <h5>Manage Clients</h5>
 
-<h5>Manage Clients</h5>
-
-<form method="POST" action="/add_client">
-    <input name="name" class="form-control mb-2" placeholder="Client name">
-    <button class="btn btn-primary shadow-sm">Add Client</button>
-</form>
-
+    <form method="POST" action="/add_client">
+        <input name="name" class="form-control mb-2" placeholder="Client name">
+        <button class="btn btn-primary shadow-sm">Add Client</button>
+    </form>
 </div>
 
 <div class="card p-3 mt-3">
+    <h5>Manage Regions</h5>
 
-<h5>Manage Regions</h5>
-
-<form method="POST" action="/add_region">
-    <input name="name" class="form-control mb-2" placeholder="Region name">
-    <button class="btn btn-primary shadow-sm">Add Region</button>
-</form>
-
+    <form method="POST" action="/add_region">
+        <input name="name" class="form-control mb-2" placeholder="Region name">
+        <button class="btn btn-primary shadow-sm">Add Region</button>
+    </form>
 </div>
+
+{% endif %}
 
 {% endblock %}
