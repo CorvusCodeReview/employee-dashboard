@@ -32,6 +32,7 @@
     <tr>
         <th>Task</th>
         <th>Estimated Time</th>
+        <th>Action</th>
     </tr>
 
     {% if tasks %}
@@ -39,6 +40,9 @@
         <tr>
             <td>{{ task.name }}</td>
             <td>{{ task.suggested_time }}</td>
+            <td>
+                <a href="/delete_task/{{ task.id }}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
         </tr>
         {% endfor %}
     {% else %}
