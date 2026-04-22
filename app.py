@@ -66,6 +66,14 @@ class Task(db.Model):
     name = db.Column(db.String(200))
     suggested_time = db.Column(db.String(50))
 
+class Client(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+
+class Region(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+
 
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,7 +87,8 @@ class ReportTask(db.Model):
     task_id = db.Column(db.Integer)
     actual_time = db.Column(db.String(50))
     notes = db.Column(db.String(500))
-
+    client_id = db.Column(db.Integer)
+    region_id = db.Column(db.Integer)
 
 # ------------------ LOGIN ------------------
 
@@ -183,6 +192,8 @@ def submit_report():
         task_ids = request.form.getlist('task')
         times = request.form.getlist('time')
         notes_list = request.form.getlist('notes')
+        client_ids = request.form.getlist('client')
+        region_ids = request.form.getlist('region')
 
         if existing_report:
             ReportTask.query.filter_by(report_id=existing_report.id).delete()
@@ -193,7 +204,9 @@ def submit_report():
                         report_id=existing_report.id,
                         task_id=task_ids[i],
                         actual_time=times[i],
-                        notes=notes_list[i]
+                        notes=notes_list[i],
+                        client_id=client_ids[i] if i < len(client_ids) else None,
+                        region_id=region_ids[i] if i < len(region_ids) else None
                     ))
 
             db.session.commit()
@@ -221,7 +234,16 @@ def submit_report():
     tasks = Task.query.all()
     existing_tasks = ReportTask.query.filter_by(report_id=existing_report.id).all() if existing_report else []
 
-    return render_template('submit_report.html', tasks=tasks, existing_tasks=existing_tasks)
+    clients = Client.query.all()
+    regions = Region.query.all()
+
+    return render_template(
+        'submit_report.html',
+        tasks=tasks,
+        existing_tasks=existing_tasks,
+        clients=clients,
+        regions=regions
+    )
 
 
 # ------------------ MY REPORTS ------------------
