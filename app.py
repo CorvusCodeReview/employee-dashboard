@@ -354,6 +354,7 @@ def admin():
     users = User.query.all()
     clients = Client.query.all()
     regions = Region.query.all()
+    tasks = Task.query.all()
 
     return render_template(
         'admin.html',
