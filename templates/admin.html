@@ -57,7 +57,7 @@
 
 <!-- TASKS -->
 <div class="col-md-4">
-    <div class="border rounded p-3 h-100">
+    <div class="border rounded p-3 admin-box">
 
         <h6 class="mb-3">Tasks</h6>
 
@@ -69,7 +69,10 @@
         </form>
 
         <!-- TASK LIST -->
-        <table class="table table-sm mt-2">
+        <div class="admin-list">
+            <table class="table table-sm">
+            </table>
+        </div>
             {% for t in tasks %}
             <tr>
                 <td>{{ t.name }}</td>
@@ -89,7 +92,7 @@
 
         <!-- CLIENTS -->
         <div class="col-md-4">
-            <div class="border rounded p-3 h-100">
+            <div class="border rounded p-3 admin-box">
 
                 <h6 class="mb-3">Clients</h6>
 
@@ -98,7 +101,10 @@
                     <button class="btn btn-primary btn-sm w-100">Add</button>
                 </form>
 
-                <table class="table table-sm mt-2">
+                <div class="admin-list">
+                    <table class="table table-sm">
+                    </table>
+                </div>
                     {% for c in clients %}
                     <tr>
                         <td>{{ c.name }}</td>
@@ -118,7 +124,7 @@
 
         <!-- REGIONS -->
         <div class="col-md-4">
-            <div class="border rounded p-3 h-100">
+            <div class="border rounded p-3 admin-box">
 
                 <h6 class="mb-3">Regions</h6>
 
@@ -127,7 +133,10 @@
                     <button class="btn btn-primary btn-sm w-100">Add</button>
                 </form>
 
-                <table class="table table-sm mt-2">
+                <div class="admin-list">
+                    <table class="table table-sm">
+                    </table>
+                </div>
                     {% for r in regions %}
                     <tr>
                         <td>{{ r.name }}</td>
