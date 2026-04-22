@@ -8,7 +8,7 @@
 <div class="card p-3 mb-4">
     <h5 class="mb-3">Users</h5>
 
-    {% if current_user.role == 'manager' %}
+    {% if current_user.role in ['manager','senior'] %}
     <form method="POST" action="/add_user" class="row g-2 mb-3">
         <div class="col-md-4">
             <input name="username" class="form-control" placeholder="Username" required>
