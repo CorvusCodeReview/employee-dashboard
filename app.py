@@ -317,30 +317,6 @@ def report_details(report_id):
         tasks=detailed_tasks
     )
 
-# ------------------ MANAGE TASKS ------------------
-
-@app.route('/manage_tasks', methods=['GET', 'POST'])
-@login_required
-def manage_tasks():
-
-    # Only manager can add tasks
-    if current_user.role != 'manager':
-        tasks = Task.query.all()
-        return render_template('manage_tasks.html', tasks=tasks)
-
-    if request.method == 'POST':
-        name = request.form['name']
-        suggested_time = request.form['suggested_time']
-
-        if name and suggested_time:
-            db.session.add(Task(name=name, suggested_time=suggested_time))
-            db.session.commit()
-            flash("Task added successfully!", "success")
-            return redirect(url_for('manage_tasks'))
-
-    tasks = Task.query.all()
-    return render_template('manage_tasks.html', tasks=tasks)
-
 # ------------------ ADMIN PANEL ------------------
 
 @app.route('/admin')
@@ -477,7 +453,7 @@ def delete_task(id):
         db.session.commit()
         flash("Task deleted", "success")
 
-    return redirect(url_for('manage_tasks'))
+    return redirect(url_for('admin'))
 
 
 @app.route('/delete_client/<int:id>')
