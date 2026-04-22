@@ -511,6 +511,24 @@ def delete_region(id):
 
     return redirect(url_for('admin'))
 
+@app.route('/add_task', methods=['POST'])
+@login_required
+def add_task():
+
+    if current_user.role != 'manager':
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
+
+    name = request.form['name']
+    time = request.form['suggested_time']
+
+    db.session.add(Task(name=name, suggested_time=time))
+    db.session.commit()
+
+    flash("Task added successfully", "success")
+
+    return redirect(url_for('admin'))
+
 # ------------------ EXPORT ------------------
 
 @app.route('/export')
