@@ -263,7 +263,8 @@ def my_reports():
 def all_reports():
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger") 
+        return redirect(url_for('dashboard'))
 
     selected_user = request.args.get('user_id')
     selected_date = request.args.get('date')
@@ -291,7 +292,7 @@ def report_details(report_id):
 
     # 🔒 Access control
     if current_user.role not in ['manager', 'senior'] and report.user_id != current_user.id:
-        return "Access Denied"
+        flash("Access Denied", "danger") return redirect(url_for('dashboard'))
 
     tasks = ReportTask.query.filter_by(report_id=report.id).all()
     user = User.query.get(report.user_id)
@@ -346,7 +347,7 @@ def manage_tasks():
 def admin():
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger") return redirect(url_for('dashboard'))
 
     users = User.query.all()
     return render_template('admin.html', users=users)
@@ -357,7 +358,7 @@ def admin():
 def add_user():
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger") return redirect(url_for('dashboard'))
 
     username = request.form['username']
     password = generate_password_hash(request.form['password'])
@@ -388,7 +389,7 @@ def add_user():
 def delete_user(user_id):
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger") return redirect(url_for('dashboard'))
 
     user = User.query.get(user_id)
 
@@ -409,7 +410,7 @@ def delete_user(user_id):
 def reset_user_password(user_id):
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger") return redirect(url_for('dashboard'))
 
     user = User.query.get(user_id)
 
@@ -425,7 +426,8 @@ def reset_user_password(user_id):
 @login_required
 def add_client():
     if current_user.role != 'manager':
-        return "Access Denied"
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
 
     name = request.form['name']
     db.session.add(Client(name=name))
@@ -437,7 +439,8 @@ def add_client():
 @login_required
 def add_region():
     if current_user.role != 'manager':
-        return "Access Denied"
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
 
     name = request.form['name']
     db.session.add(Region(name=name))
@@ -451,7 +454,8 @@ def add_region():
 def export_excel():
 
     if current_user.role not in ['manager', 'senior']:
-        return "Access Denied"
+        flash("Access Denied", "danger")
+        return redirect(url_for('dashboard'))
 
     reports = Report.query.all()
     data = []
