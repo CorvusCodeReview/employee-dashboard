@@ -359,7 +359,8 @@ def admin():
         'admin.html',
         users=users,
         clients=clients,
-        regions=regions
+        regions=regions,
+        tasks=tasks
     )
 
 
