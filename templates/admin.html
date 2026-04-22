@@ -8,6 +8,30 @@
 <div class="card p-3 mb-4">
     <h5 class="mb-3">Users</h5>
 
+    {% if current_user.role == 'manager' %}
+    <form method="POST" action="/add_user" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input name="username" class="form-control" placeholder="Username" required>
+        </div>
+
+        <div class="col-md-4">
+            <input name="password" class="form-control" placeholder="Password" required>
+        </div>
+
+        <div class="col-md-3">
+            <select name="role" class="form-select">
+                <option value="employee">Employee</option>
+                <option value="senior">Senior</option>
+                <option value="manager">Manager</option>
+            </select>
+        </div>
+
+        <div class="col-md-1">
+            <button class="btn btn-primary w-100">Add</button>
+        </div>
+    </form>
+    {% endif %}
+
     <table class="table table-hover align-middle">
         <tr>
             <th>Username</th>
