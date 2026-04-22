@@ -55,40 +55,31 @@
 
     <div class="row g-4">
 
-<!-- TASKS -->
-<div class="col-md-4">
-    <div class="border rounded p-3 admin-box">
+        <!-- TASKS -->
+        <div class="col-md-4">
+            <div class="border rounded p-3 admin-box">
 
-        <h6 class="mb-3">Tasks</h6>
+                <h6 class="mb-3">Tasks</h6>
 
-        <!-- ADD TASK -->
-        <form method="POST" action="/add_task" class="mb-2">
-            <input name="name" class="form-control mb-2" placeholder="Add task" required>
-            <input name="suggested_time" class="form-control mb-2" placeholder="Time (e.g. 2 hrs)" required>
-            <button class="btn btn-primary btn-sm w-100">Add</button>
-        </form>
+                <form method="POST" action="/add_task" class="mb-3">
+                    <input name="name" class="form-control mb-2" placeholder="Task name" required>
+                    <input name="suggested_time" class="form-control mb-2" placeholder="Time (e.g. 2 hrs)" required>
+                    <button class="btn btn-primary btn-sm w-100">Add</button>
+                </form>
 
-        <!-- TASK LIST -->
-        <div class="admin-list">
-            <table class="table table-sm">
-            </table>
+                <div class="admin-list-clean">
+                    {% for t in tasks %}
+                    <div class="list-item">
+                        <span>{{ t.name }}</span>
+                        <a href="/delete_task/{{ t.id }}" class="delete-icon"
+                           onclick="return confirm('Delete this task?')">✕</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
         </div>
-            {% for t in tasks %}
-            <tr>
-                <td>{{ t.name }}</td>
-                <td class="text-end">
-                    <a href="/delete_task/{{ t.id }}"
-                       class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('Delete this task?')">
-                       ✕
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
 
-    </div>
-</div>
 
         <!-- CLIENTS -->
         <div class="col-md-4">
@@ -96,31 +87,24 @@
 
                 <h6 class="mb-3">Clients</h6>
 
-                <form method="POST" action="/add_client" class="mb-2">
+                <form method="POST" action="/add_client" class="mb-3">
                     <input name="name" class="form-control mb-2" placeholder="Add client" required>
                     <button class="btn btn-primary btn-sm w-100">Add</button>
                 </form>
 
-                <div class="admin-list">
-                    <table class="table table-sm">
-                    </table>
-                </div>
+                <div class="admin-list-clean">
                     {% for c in clients %}
-                    <tr>
-                        <td>{{ c.name }}</td>
-                        <td class="text-end">
-                            <a href="/delete_client/{{ c.id }}"
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Delete this client?')">
-                               ✕
-                            </a>
-                        </td>
-                    </tr>
+                    <div class="list-item">
+                        <span>{{ c.name }}</span>
+                        <a href="/delete_client/{{ c.id }}" class="delete-icon"
+                           onclick="return confirm('Delete this client?')">✕</a>
+                    </div>
                     {% endfor %}
-                </table>
+                </div>
 
             </div>
         </div>
+
 
         <!-- REGIONS -->
         <div class="col-md-4">
@@ -128,34 +112,25 @@
 
                 <h6 class="mb-3">Regions</h6>
 
-                <form method="POST" action="/add_region" class="mb-2">
+                <form method="POST" action="/add_region" class="mb-3">
                     <input name="name" class="form-control mb-2" placeholder="Add region" required>
                     <button class="btn btn-primary btn-sm w-100">Add</button>
                 </form>
 
-                <div class="admin-list">
-                    <table class="table table-sm">
-                    </table>
-                </div>
+                <div class="admin-list-clean">
                     {% for r in regions %}
-                    <tr>
-                        <td>{{ r.name }}</td>
-                        <td class="text-end">
-                            <a href="/delete_region/{{ r.id }}"
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Delete this region?')">
-                               ✕
-                            </a>
-                        </td>
-                    </tr>
+                    <div class="list-item">
+                        <span>{{ r.name }}</span>
+                        <a href="/delete_region/{{ r.id }}" class="delete-icon"
+                           onclick="return confirm('Delete this region?')">✕</a>
+                    </div>
                     {% endfor %}
-                </table>
+                </div>
 
             </div>
         </div>
 
     </div>
-
 </div>
 {% endif %}
 
