@@ -11,31 +11,55 @@
 <div id="task-container">
 
 {% for t in existing_tasks or [None] %}
-<div class="row mb-3">
+<div class="row mb-3 align-items-center">
 
-<div class="col-md-4">
-    <select name="task" class="form-select" required>
-        {% for task in tasks %}
-        <option value="{{ task.id }}"
-        {% if t and task.id == t.task_id %}selected{% endif %}>
-        {{ task.name }} ({{ task.suggested_time }})
-        </option>
-        {% endfor %}
-    </select>
-</div>
+    <!-- TASK -->
+    <div class="col-md-3">
+        <select name="task" class="form-select task-select" required>
+            {% for task in tasks %}
+            <option value="{{ task.id }}"
+            {% if t and task.id == t.task_id %}selected{% endif %}>
+            {{ task.name }} ({{ task.suggested_time }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
 
-<div class="col-md-3">
-    <input name="time" class="form-control same-input"
-           value="{{ t.actual_time if t else '' }}"
-           placeholder="Time">
-</div>
+    <!-- CLIENT (HIDDEN INITIALLY) -->
+    <div class="col-md-2 client-box" style="display:none;">
+        <select name="client" class="form-select">
+            <option value="">Client</option>
+            {% for c in clients %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<div class="col-md-4">
-    <input name="notes" class="form-control same-input"
-           value="{{ t.notes if t else '' }}"
-           placeholder="Notes">
-</div>
+    <!-- REGION (HIDDEN INITIALLY) -->
+    <div class="col-md-2 region-box" style="display:none;">
+        <select name="region" class="form-select">
+            <option value="">Region</option>
+            {% for r in regions %}
+            <option value="{{ r.id }}">{{ r.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
+    <!-- TIME -->
+    <div class="col-md-2">
+        <input name="time" class="form-control same-input"
+               value="{{ t.actual_time if t else '' }}"
+               placeholder="Time">
+    </div>
+
+    <!-- NOTES -->
+    <div class="col-md-2">
+        <input name="notes" class="form-control same-input"
+               value="{{ t.notes if t else '' }}"
+               placeholder="Notes">
+    </div>
+
+    <!-- DELETE -->
     <div class="col-md-1">
         <button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button>
     </div>
@@ -62,11 +86,15 @@ function addRow() {
     let row = firstRow.cloneNode(true);
 
     // reset select
-    let select = row.querySelector('select');
+    let select = row.querySelector('.task-select');
     select.selectedIndex = 0;
 
     // reset inputs
     row.querySelectorAll('input').forEach(i => i.value = '');
+
+    // hide client & region
+    row.querySelector('.client-box').style.display = "none";
+    row.querySelector('.region-box').style.display = "none";
 
     container.appendChild(row);
 }
@@ -74,11 +102,32 @@ function addRow() {
 function removeRow(btn) {
     let container = document.getElementById('task-container');
 
-    // prevent deleting last row
     if (container.children.length > 1) {
         btn.closest('.row').remove();
     }
 }
+
+/* 🔥 CONDITIONAL LOGIC */
+document.addEventListener("change", function(e) {
+
+    if (e.target.classList.contains("task-select")) {
+
+        let row = e.target.closest(".row");
+        let selectedText = e.target.options[e.target.selectedIndex].text;
+
+        let clientBox = row.querySelector(".client-box");
+        let regionBox = row.querySelector(".region-box");
+
+        if (selectedText.includes("Lead Uploads") || selectedText.includes("Lead QA")) {
+            clientBox.style.display = "block";
+            regionBox.style.display = "block";
+        } else {
+            clientBox.style.display = "none";
+            regionBox.style.display = "none";
+        }
+    }
+
+});
 </script>
 
 {% endblock %}
