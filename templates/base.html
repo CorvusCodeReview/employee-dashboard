@@ -47,12 +47,18 @@
     .brand-logo {
         height: 30px;
         margin-right: 10px;
+        transition: 0.2s ease;
     }
 
     .brand-text {
         color: white;
         font-weight: 600;
         font-size: 16px;
+    }
+
+    .brand-logo:hover {
+        opacity: 0.85;
+        transform: scale(1.05);
     }
 
     /* CARDS */
@@ -195,7 +201,8 @@
     <div class="custom-nav d-flex justify-content-between align-items-center">
 
         <!-- LEFT: BRAND -->
-        <a href="/" class="d-flex align-items-center text-decoration-none">
+        <a href="/" class="d-flex align-items-center text-decoration-none"
+           title="Go to Dashboard">
             <img src="{{ url_for('static', filename='images/logo.png') }}" class="brand-logo">
         </a>
 
