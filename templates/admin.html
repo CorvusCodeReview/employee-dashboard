@@ -4,6 +4,19 @@
 
 <h3 class="page-title">Admin Panel</h3>
 
+{% if current_user.role == 'manager' %}
+
+<div class="card p-3 mt-3">
+    <h5>Task Management</h5>
+    <p class="text-muted small">Add, view or delete tasks</p>
+
+    <a href="/manage_tasks" class="btn btn-primary shadow-sm">
+        Manage Tasks
+    </a>
+</div>
+
+{% endif %}
+
 <!-- ADD USER -->
 <div class="card p-3 mb-3">
 
