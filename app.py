@@ -370,7 +370,7 @@ def admin():
 def add_user():
 
     if current_user.role not in ['manager', 'senior']:
-        flash("Access Denied", "danger") 
+        flash("Access Denied", "danger")
         return redirect(url_for('dashboard'))
 
     username = request.form['username']
