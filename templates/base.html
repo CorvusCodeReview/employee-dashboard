@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <!-- FAVICON -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+    <!-- FLATPICKR -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <title>Employee Dashboard</title>
@@ -13,13 +18,12 @@
 
     <style>
 
-    /* GLOBAL */
     body {
         background: #f5f7fb;
         font-family: 'Inter', sans-serif;
     }
 
-    /* NAVBAR (THEME APPLIED) */
+    /* NAVBAR */
     .custom-nav {
         background: #0c1f47;
         padding: 12px 20px;
@@ -39,7 +43,19 @@
         opacity: 0.8;
     }
 
-    /* CARDS (THEMED) */
+    /* BRAND */
+    .brand-logo {
+        height: 30px;
+        margin-right: 10px;
+    }
+
+    .brand-text {
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    /* CARDS */
     .card {
         border-radius: 12px !important;
         border: 1px solid #e6eaf2;
@@ -50,7 +66,6 @@
         overflow: hidden;
     }
 
-    /* subtle left accent */
     .card::before {
         content: "";
         position: absolute;
@@ -74,7 +89,6 @@
         padding: 6px 14px !important;
         font-size: 14px;
         font-weight: 500;
-        transition: all 0.2s ease;
     }
 
     .btn-primary {
@@ -86,43 +100,27 @@
         background-color: #16326e !important;
     }
 
-    .btn-danger {
-        padding: 5px 10px !important;
-    }
-
-    /* TABLES */
-    table {
-        border-radius: 10px;
-        overflow: hidden;
-        font-size: 14px;
-    }
-
-    table tr {
-        vertical-align: middle;
-    }
-
-    table tbody tr:hover {
-        background-color: #f3f4f6;
-    }
-
+    /* TABLE */
     table th {
         background: #f1f4fa;
         color: #0c1f47;
         font-weight: 600;
     }
 
-    /* INPUTS */
-    .form-control {
+    /* INPUT */
+    .form-control,
+    .form-select {
         border-radius: 8px;
+        font-size: 14px;
     }
 
-    /* PAGE TITLE */
+    /* TITLE */
     .page-title {
         color: #0c1f47;
         font-weight: 600;
     }
 
-    /* FLASH (CENTERED) */
+    /* FLASH */
     #flash-container {
         position: fixed;
         top: 20px;
@@ -140,56 +138,14 @@
         border-radius: 8px;
     }
 
-    /* Prevent repaint glitch */
-    .form-select {
-        transition: none !important;
-        box-shadow: none !important;
-    }
-
-    .form-select:focus {
-        box-shadow: none !important;
-        outline: none;
-    }
-
-    .form-select {
-        border-radius: 8px;
-        font-size: 14px;
-    }
-
-    /* Make select & input identical */
-    .form-select,
-    .same-input {
-        border-radius: 8px !important;
-        font-size: 14px;
-        height: 38px;
-    }
-
-    /* Fix admin card alignment */
-    .admin-box {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Scrollable list */
-    .admin-list {
-        max-height: 220px;
-        overflow-y: auto;
-        margin-top: 10px;
-    }
-
-    /* Better spacing */
-    .admin-list tr td {
-        padding: 8px 4px;
-    }
-
+    /* ADMIN LIST */
     .admin-list-clean {
         display: flex;
         flex-direction: column;
         gap: 8px;
         max-height: 220px;
         overflow-y: auto;
-        }
+    }
 
     .list-item {
         display: flex;
@@ -198,7 +154,6 @@
         padding: 8px 10px;
         border-radius: 6px;
         background: #f8f9fb;
-        transition: 0.2s;
     }
 
     .list-item:hover {
@@ -217,7 +172,17 @@
         color: #dc3545;
         background: #ffecec;
     }
-        
+
+    /* FOOTER */
+    .footer {
+        margin-top: 40px;
+        padding: 15px;
+        text-align: center;
+        font-size: 13px;
+        color: #777;
+        border-top: 1px solid #eee;
+    }
+
     </style>
 
 </head>
@@ -229,62 +194,70 @@
     <!-- NAVBAR -->
     <div class="custom-nav d-flex justify-content-between align-items-center">
 
-    <!-- LEFT SIDE -->
-    <div>
-        <a class="nav-link d-inline" href="/">Dashboard</a>
+        <!-- LEFT: BRAND -->
+        <div class="d-flex align-items-center">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" class="brand-logo">
+            <span class="brand-text">Madison Logic</span>
+        </div>
+
+        <!-- RIGHT: PROFILE -->
+        <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                {{ current_user.username }}
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+
+                <li class="dropdown-item text-muted small">
+                    {{ current_user.role|capitalize }}
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                {% if current_user.role in ['manager','senior'] %}
+                <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
+                {% endif %}
+
+                <li><hr class="dropdown-divider"></li>
+
+                <li><a class="dropdown-item" href="/change_password">Change Password</a></li>
+                <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+
+            </ul>
+        </div>
+
     </div>
 
-    <!-- RIGHT SIDE (PROFILE DROPDOWN) -->
-    <div class="dropdown">
 
-        <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-            {{ current_user.username }}
-        </button>
+    <!-- FLASH -->
+    <div id="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} shadow-sm flash-msg">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 
-        <ul class="dropdown-menu dropdown-menu-end">
+    <!-- CONTENT -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
 
-            <li class="dropdown-item text-muted small">
-                {{ current_user.role|capitalize }}
-            </li>
-
-            <li><hr class="dropdown-divider"></li>
-
-            <!-- Senior + Manager -->
-            {% if current_user.role in ['manager','senior'] %}
-            <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
-            {% endif %}
-
-            <li><hr class="dropdown-divider"></li>
-
-            <li><a class="dropdown-item" href="/change_password">Change Password</a></li>
-            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-
-        </ul>
+    <!-- FOOTER -->
+    <div class="footer">
+        © 2026 Madison Logic • Built by Ritesh Majumdar
     </div>
 
 </div>
-    
-<!-- FLASH -->
-<div id="flash-container">
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} shadow-sm flash-msg">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-</div>
-
-<!-- MAIN CONTENT -->
-<div class="container mt-4">
-    {% block content %}{% endblock %}
-</div>
-
-<!-- AUTO DISMISS FLASH -->
 <script>
 setTimeout(() => {
     document.querySelectorAll('.flash-msg').forEach(el => {
@@ -294,9 +267,7 @@ setTimeout(() => {
         setTimeout(() => el.remove(), 600);
     });
 }, 5000);
-</script>
 
-<script>
 document.addEventListener("DOMContentLoaded", function () {
     flatpickr(".custom-date", {
         dateFormat: "Y-m-d",
@@ -305,8 +276,5 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
 </body>
 </html>
