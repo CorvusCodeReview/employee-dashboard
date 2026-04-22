@@ -91,6 +91,22 @@
     </form>
 </div>
 
+<table class="table mt-3">
+    <tr>
+        <th>Client</th>
+        <th>Action</th>
+    </tr>
+
+    {% for c in clients %}
+    <tr>
+        <td>{{ c.name }}</td>
+        <td>
+            <a href="/delete_client/{{ c.id }}" class="btn btn-sm btn-danger">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 <div class="card p-3 mt-3">
     <h5>Manage Regions</h5>
 
@@ -99,6 +115,22 @@
         <button class="btn btn-primary shadow-sm">Add Region</button>
     </form>
 </div>
+
+<table class="table mt-3">
+    <tr>
+        <th>Region</th>
+        <th>Action</th>
+    </tr>
+
+    {% for r in regions %}
+    <tr>
+        <td>{{ r.name }}</td>
+        <td>
+            <a href="/delete_region/{{ r.id }}" class="btn btn-sm btn-danger">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endif %}
 
