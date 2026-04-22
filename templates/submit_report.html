@@ -28,7 +28,7 @@
     <!-- CLIENT (HIDDEN INITIALLY) -->
     <div class="col-md-2 client-box" style="display:none;">
         <select name="client" class="form-select">
-            <option value="">Client</option>
+            <option value="" disabled selected hidden>Select Client</option>
             {% for c in clients %}
             <option value="{{ c.id }}">{{ c.name }}</option>
             {% endfor %}
@@ -38,7 +38,7 @@
     <!-- REGION (HIDDEN INITIALLY) -->
     <div class="col-md-2 region-box" style="display:none;">
         <select name="region" class="form-select">
-            <option value="">Region</option>
+            <option value="" disabled selected hidden>Select Region</option>
             {% for r in regions %}
             <option value="{{ r.id }}">{{ r.name }}</option>
             {% endfor %}
