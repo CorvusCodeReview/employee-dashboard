@@ -421,6 +421,29 @@ def reset_user_password(user_id):
     flash("Password reset to temp123", "warning")
     return redirect(url_for('admin'))
 
+@app.route('/add_client', methods=['POST'])
+@login_required
+def add_client():
+    if current_user.role != 'manager':
+        return "Access Denied"
+
+    name = request.form['name']
+    db.session.add(Client(name=name))
+    db.session.commit()
+    return redirect(url_for('admin'))
+
+
+@app.route('/add_region', methods=['POST'])
+@login_required
+def add_region():
+    if current_user.role != 'manager':
+        return "Access Denied"
+
+    name = request.form['name']
+    db.session.add(Region(name=name))
+    db.session.commit()
+    return redirect(url_for('admin'))
+
 # ------------------ EXPORT ------------------
 
 @app.route('/export')
