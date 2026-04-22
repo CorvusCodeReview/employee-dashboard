@@ -348,14 +348,19 @@ def manage_tasks():
 def admin():
 
     if current_user.role not in ['manager', 'senior']:
-        flash("Access Denied", "danger") 
+        flash("Access Denied", "danger")
         return redirect(url_for('dashboard'))
 
     users = User.query.all()
     clients = Client.query.all()
     regions = Region.query.all()
 
-        return render_template('admin.html', users=users, clients=clients, regions=regions)
+    return render_template(
+        'admin.html',
+        users=users,
+        clients=clients,
+        regions=regions
+    )
 
 
 @app.route('/add_user', methods=['POST'])
