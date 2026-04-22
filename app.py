@@ -478,6 +478,20 @@ def export_excel():
 with app.app_context():
     db.create_all()
 
+    # 🔥 ADD MISSING COLUMNS (SAFE MIGRATION)
+    from sqlalchemy import text
+
+    try:
+        db.session.execute(text("ALTER TABLE report_task ADD COLUMN client_id INTEGER"))
+    except:
+        pass
+
+    try:
+        db.session.execute(text("ALTER TABLE report_task ADD COLUMN region_id INTEGER"))
+    except:
+        pass
+
+    db.session.commit()
 
 if __name__ == '__main__':
     app.run()
