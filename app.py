@@ -352,7 +352,10 @@ def admin():
         return redirect(url_for('dashboard'))
 
     users = User.query.all()
-    return render_template('admin.html', users=users)
+    clients = Client.query.all()
+    regions = Region.query.all()
+
+        return render_template('admin.html', users=users, clients=clients, regions=regions)
 
 
 @app.route('/add_user', methods=['POST'])
