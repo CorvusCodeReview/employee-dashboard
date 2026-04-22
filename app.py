@@ -437,6 +437,7 @@ def add_client():
     name = request.form['name']
     db.session.add(Client(name=name))
     db.session.commit()
+    flash("Client added successfully", "success")
     return redirect(url_for('admin'))
 
 
@@ -450,6 +451,7 @@ def add_region():
     name = request.form['name']
     db.session.add(Region(name=name))
     db.session.commit()
+    flash("Region added successfully", "success")
     return redirect(url_for('admin'))
 
 # ------------------ EXPORT ------------------
