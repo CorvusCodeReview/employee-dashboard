@@ -170,19 +170,6 @@ def reset_password():
             success = "Password reset to 'temp123'. Please log in and change it immediately."
     return render_template("reset_password.html", error=error, success=success)
 
-@app.route("/emergency_reset_passwords")
-def emergency_reset_passwords():
-
-    users = User.query.all()
-
-    for u in users:
-        u.password = generate_password_hash("temp123")
-        u.must_change_password = True
-
-    db.session.commit()
-
-    return "All passwords reset to temp123"
-
 # ------------------------------------------------------------------
 # DASHBOARD
 # ------------------------------------------------------------------
