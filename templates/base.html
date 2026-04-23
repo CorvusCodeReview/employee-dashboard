@@ -1,286 +1,542 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard{% endblock %} · Employee Portal</title>
 
-    <!-- FAVICON -->
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 
-    <!-- FLATPICKR -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    <title>Employee Dashboard</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --brand:        #0c1f47;
+      --brand-hover:  #16326e;
+      --accent:       #2563eb;
+      --accent-soft:  #eff4ff;
+      --bg:           #f3f6fb;
+      --surface:      #ffffff;
+      --border:       #e2e8f0;
+      --border-dark:  #cbd5e1;
+      --text:         #1e293b;
+      --text-muted:   #64748b;
+      --success:      #16a34a;
+      --danger:       #dc2626;
+      --warning:      #d97706;
+      --radius:       10px;
+      --radius-sm:    7px;
+      --shadow:       0 1px 4px rgba(12,31,71,.07), 0 4px 16px rgba(12,31,71,.05);
+      --shadow-lg:    0 4px 12px rgba(12,31,71,.10), 0 12px 32px rgba(12,31,71,.08);
+      --nav-h:        56px;
+    }
 
-    <!-- FONT -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <style>
+    /* ============================================================
+       RESET / BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
 
     body {
-        background: #f5f7fb;
-        font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* NAVBAR */
-    .custom-nav {
-        background: #0c1f47;
-        padding: 12px 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+    a { color: var(--accent); }
+
+    /* ============================================================
+       TOP NAV
+    ============================================================ */
+    .topnav {
+      position: sticky;
+      top: 0;
+      z-index: 1040;
+      height: var(--nav-h);
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
     }
 
+    /* Brand */
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .nav-brand img {
+      height: 26px;
+      filter: brightness(0) invert(1);
+      object-fit: contain;
+    }
+    .nav-brand-text {
+      color: #fff;
+      font-weight: 700;
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+
+    /* Nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
     .nav-link {
-        color: white !important;
-        margin-right: 14px;
-        font-weight: 500;
-        transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,.72) !important;
+      text-decoration: none !important;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 11px;
+      border-radius: 7px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .nav-link i { font-size: 14px; }
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255,255,255,.13);
+      color: #fff !important;
     }
 
-    .nav-link:hover {
-        text-decoration: underline;
-        opacity: 0.8;
+    /* User menu */
+    .nav-user-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 12px 5px 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .nav-user-btn:hover { background: rgba(255,255,255,.18); }
+
+    .nav-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
     }
 
-    /* BRAND */
-    .brand-logo {
-        height: 30px;
-        margin-right: 10px;
-        transition: 0.2s ease;
+    /* Bootstrap dropdown override */
+    .dropdown-menu {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      min-width: 190px;
+      font-size: 13.5px;
+    }
+    .dropdown-item {
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      transition: background .12s;
+    }
+    .dropdown-item i { font-size: 15px; color: var(--text-muted); }
+    .dropdown-item:hover { background: var(--accent-soft); }
+    .dropdown-item:hover i { color: var(--accent); }
+    .dropdown-item.text-danger { color: var(--danger) !important; }
+    .dropdown-item.text-danger i { color: var(--danger) !important; }
+    .dropdown-divider { margin: 4px 0; border-color: var(--border); }
+
+    /* ============================================================
+       PAGE WRAPPER
+    ============================================================ */
+    .page-wrap {
+      flex: 1;
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
     }
 
-    .brand-text {
-        color: white;
-        font-weight: 600;
-        font-size: 16px;
+    /* ============================================================
+       PAGE HEADER
+    ============================================================ */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
     }
-
-    .brand-logo:hover {
-        opacity: 0.85;
-        transform: scale(1.05);
+    .page-title {
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--brand);
+      margin: 0 0 2px;
     }
+    .breadcrumb-trail {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    .breadcrumb-trail a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .breadcrumb-trail a:hover { text-decoration: underline; }
 
-    /* CARDS */
+    /* ============================================================
+       CARDS
+    ============================================================ */
     .card {
-        border-radius: 12px !important;
-        border: 1px solid #e6eaf2;
-        background: #ffffff;
-        box-shadow: 0 6px 18px rgba(12,31,71,0.06);
-        transition: all 0.25s ease;
-        position: relative;
-        overflow: hidden;
+      border-radius: var(--radius) !important;
+      border: 1px solid var(--border) !important;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card-hover {
+      transition: transform .2s ease, box-shadow .2s ease;
+      cursor: pointer;
+    }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .card::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background: #0c1f47;
-        opacity: 0.08;
-    }
-
-    .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 24px rgba(12,31,71,0.12);
-    }
-
-    /* BUTTONS */
-    button,
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
     .btn {
-        border-radius: 8px !important;
-        padding: 6px 14px !important;
-        font-size: 14px;
-        font-weight: 500;
+      border-radius: var(--radius-sm) !important;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s;
     }
-
+    .btn i { font-size: 14px; }
     .btn-primary {
-        background-color: #0c1f47 !important;
-        border: none;
+      background: var(--brand) !important;
+      border-color: var(--brand) !important;
     }
-
     .btn-primary:hover {
-        background-color: #16326e !important;
+      background: var(--brand-hover) !important;
+      border-color: var(--brand-hover) !important;
     }
+    .btn-sm { padding: 4px 11px !important; font-size: 12.5px !important; }
 
-    /* TABLE */
-    table th {
-        background: #f1f4fa;
-        color: #0c1f47;
-        font-weight: 600;
-    }
-
-    /* INPUT */
+    /* ============================================================
+       FORMS
+    ============================================================ */
     .form-control,
     .form-select {
-        border-radius: 8px;
-        font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      border-color: var(--border-dark);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      display: block;
     }
 
-    /* TITLE */
-    .page-title {
-        color: #0c1f47;
-        font-weight: 600;
+    /* ============================================================
+       TABLES
+    ============================================================ */
+    .table { font-size: 13.5px; margin-bottom: 0; }
+    .table thead th {
+      background: #f7f9fc;
+      color: var(--brand);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      border-bottom: 2px solid var(--border);
+      padding: 10px 14px;
+      white-space: nowrap;
     }
+    .table tbody td {
+      padding: 10px 14px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+    }
+    .table tbody tr:last-child td { border-bottom: none; }
+    .table-hover tbody tr:hover { background: var(--accent-soft); }
 
-    /* FLASH */
+    /* ============================================================
+       BADGES / STATUS
+    ============================================================ */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .badge-success  { background: #dcfce7; color: #16a34a; }
+    .badge-muted    { background: #f1f5f9; color: #64748b; }
+    .badge-warning  { background: #fef3c7; color: #b45309; }
+    .badge-danger   { background: #fee2e2; color: #dc2626; }
+    .badge-accent   { background: var(--accent-soft); color: var(--accent); }
+    .badge-purple   { background: #ede9fe; color: #6d28d9; }
+    .badge-gold     { background: #fefce8; color: #a16207; }
+
+    /* ============================================================
+       EMPTY STATE
+    ============================================================ */
+    .empty-state {
+      text-align: center;
+      padding: 52px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state i {
+      font-size: 42px;
+      display: block;
+      margin-bottom: 14px;
+      opacity: .3;
+    }
+    .empty-state p { margin: 0; font-size: 14px; }
+
+    /* ============================================================
+       ADMIN LIST (scrollable item list in admin panel)
+    ============================================================ */
+    .admin-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .admin-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+      transition: background .12s;
+    }
+    .admin-list-item:hover { background: var(--accent-soft); }
+    .btn-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94a3b8;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-size: 14px;
+      line-height: 1;
+      transition: all .15s;
+    }
+    .btn-del:hover { color: var(--danger); background: #fee2e2; }
+
+    /* ============================================================
+       FLASH MESSAGES
+    ============================================================ */
     #flash-container {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        max-width: 350px;
-        width: 100%;
+      position: fixed;
+      top: calc(var(--nav-h) + 10px);
+      right: 18px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 340px;
+      pointer-events: none;
     }
-
     .flash-msg {
-        padding: 10px 15px;
-        font-size: 14px;
-        margin-bottom: 10px;
-        border-radius: 8px;
+      pointer-events: auto;
+      border-radius: 9px;
+      padding: 11px 15px;
+      font-size: 13.5px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: slideIn .28s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
 
-    /* ADMIN LIST */
-    .admin-list-clean {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        max-height: 220px;
-        overflow-y: auto;
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .site-footer {
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
     }
 
-    .list-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 10px;
-        border-radius: 6px;
-        background: #f8f9fb;
+    /* ============================================================
+       MISC UTILITIES
+    ============================================================ */
+    .mono { font-family: 'DM Mono', monospace; }
+    .text-brand { color: var(--brand); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .page-wrap  { padding: 18px 14px 48px; }
     }
+  </style>
 
-    .list-item:hover {
-        background: #eef2f7;
-    }
-
-    .delete-icon {
-        color: #999;
-        text-decoration: none;
-        font-size: 14px;
-        padding: 2px 6px;
-        border-radius: 4px;
-    }
-
-    .delete-icon:hover {
-        color: #dc3545;
-        background: #ffecec;
-    }
-
-    /* FOOTER */
-    .footer {
-        margin-top: 40px;
-        padding: 15px;
-        text-align: center;
-        font-size: 13px;
-        color: #777;
-        border-top: 1px solid #eee;
-    }
-
-    </style>
-
+  {% block head %}{% endblock %}
 </head>
 
 <body>
 
-<div class="container mt-3">
+<!-- ===== TOP NAV ===== -->
+<nav class="topnav">
+  <a href="/" class="nav-brand" title="Home">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo"
+         onerror="this.style.display='none'">
+    <span class="nav-brand-text">Employee Portal</span>
+  </a>
 
-    <!-- NAVBAR -->
-    <div class="custom-nav d-flex justify-content-between align-items-center">
+  <div class="nav-links">
+    <a href="/" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-house-door"></i> Home
+    </a>
+    <a href="/submit_report" class="nav-link {% if request.endpoint == 'submit_report' %}active{% endif %}">
+      <i class="bi bi-pencil-square"></i> Submit Report
+    </a>
+    <a href="/my_reports" class="nav-link {% if request.endpoint == 'my_reports' %}active{% endif %}">
+      <i class="bi bi-file-earmark-text"></i> My Reports
+    </a>
+    {% if current_user.role in ['manager', 'senior'] %}
+    <a href="/all_reports" class="nav-link {% if request.endpoint == 'all_reports' %}active{% endif %}">
+      <i class="bi bi-bar-chart-line"></i> All Reports
+    </a>
+    {% endif %}
+  </div>
 
-        <!-- LEFT: BRAND -->
-        <a href="/" class="d-flex align-items-center text-decoration-none"
-           title="Go to Dashboard">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" class="brand-logo">
+  <div class="dropdown ms-auto">
+    <button class="nav-user-btn" data-bs-toggle="dropdown" aria-expanded="false">
+      <div class="nav-avatar">{{ current_user.username[0].upper() }}</div>
+      {{ current_user.username }}
+      <i class="bi bi-chevron-down" style="font-size:10px;opacity:.7;"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li class="px-3 py-2">
+        <div style="font-weight:700;font-size:13.5px;">{{ current_user.username }}</div>
+        <div style="font-size:11.5px;color:var(--text-muted);">{{ current_user.role | capitalize }}</div>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      {% if current_user.role in ['manager', 'senior'] %}
+      <li>
+        <a class="dropdown-item {% if request.endpoint == 'admin' %}active{% endif %}" href="/admin">
+          <i class="bi bi-shield-lock"></i> Admin Panel
         </a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      {% endif %}
+      <li>
+        <a class="dropdown-item" href="/change_password">
+          <i class="bi bi-key"></i> Change Password
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item text-danger" href="/logout">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-        <!-- RIGHT: PROFILE -->
-        <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                {{ current_user.username }}
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-
-                <li class="dropdown-item text-muted small">
-                    {{ current_user.role|capitalize }}
-                </li>
-
-                <li><hr class="dropdown-divider"></li>
-
-                {% if current_user.role in ['manager','senior'] %}
-                <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
-                {% endif %}
-
-                <li><hr class="dropdown-divider"></li>
-
-                <li><a class="dropdown-item" href="/change_password">Change Password</a></li>
-                <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-
-            </ul>
-        </div>
-
-    </div>
-
-
-    <!-- FLASH -->
-    <div id="flash-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }} shadow-sm flash-msg">
-                {{ message }}
-            </div>
-            {% endfor %}
+<!-- ===== FLASH MESSAGES ===== -->
+<div id="flash-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-msg mb-0">
+        {% if   category == 'success' %}<i class="bi bi-check-circle-fill"></i>
+        {% elif category == 'danger'  %}<i class="bi bi-x-circle-fill"></i>
+        {% elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill"></i>
+        {% else                        %}<i class="bi bi-info-circle-fill"></i>
         {% endif %}
-        {% endwith %}
-    </div>
-
-    <!-- CONTENT -->
-    <div class="container mt-4">
-        {% block content %}{% endblock %}
-    </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-        © 2026 Madison Logic • Built by Ritesh Majumdar
-    </div>
-
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
 </div>
 
-<!-- SCRIPTS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ===== MAIN CONTENT ===== -->
+<main class="page-wrap">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  © 2026 Madison Logic &nbsp;·&nbsp; Built by Ritesh Majumdar
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script>
-setTimeout(() => {
-    document.querySelectorAll('.flash-msg').forEach(el => {
-        el.style.transition = "all 0.6s ease";
-        el.style.opacity = "0";
-        el.style.transform = "translateY(-10px)";
-        setTimeout(() => el.remove(), 600);
+  // Auto-dismiss flash messages after 4.5 s
+  setTimeout(function () {
+    document.querySelectorAll('.flash-msg').forEach(function (el) {
+      el.style.transition = 'opacity .5s ease, transform .5s ease';
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(24px)';
+      setTimeout(function () { el.remove(); }, 500);
     });
-}, 5000);
+  }, 4500);
 
-document.addEventListener("DOMContentLoaded", function () {
-    flatpickr(".custom-date", {
-        dateFormat: "Y-m-d",
-        allowInput: true
-    });
-});
+  // Flatpickr on date inputs
+  document.addEventListener('DOMContentLoaded', function () {
+    flatpickr('.datepick', { dateFormat: 'Y-m-d', allowInput: true });
+  });
 </script>
 
+{% block scripts %}{% endblock %}
 </body>
 </html>
