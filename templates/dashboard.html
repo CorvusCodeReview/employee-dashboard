@@ -1,48 +1,114 @@
 {% extends 'base.html' %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 
-<h3 class="page-title mb-4">
-    Welcome, {{ current_user.username }}
-</h3>
+<!-- Page header -->
+<div class="page-header">
+  <div>
+    <div class="breadcrumb-trail">Home</div>
+    <h1 class="page-title">
+      {% if now_hour < 12 %}Good morning{% elif now_hour < 17 %}Good afternoon{% else %}Good evening{% endif %},
+      {{ current_user.username }} 👋
+    </h1>
+  </div>
+  <span style="font-size:13px;color:var(--text-muted);">
+    <i class="bi bi-calendar3 me-1"></i>{{ today }}
+  </span>
+</div>
 
-<div class="row g-4 justify-content-start">
+<!-- Today's status banner -->
+{% if submitted_today %}
+<div class="alert alert-success d-flex align-items-center gap-2 mb-4"
+     style="border-radius:10px;font-size:13.5px;">
+  <i class="bi bi-check-circle-fill fs-5 flex-shrink-0"></i>
+  <span>
+    Today's report submitted. You can still
+    <a href="/submit_report" class="alert-link fw-semibold">edit it</a> if needed.
+  </span>
+</div>
+{% else %}
+<div class="alert alert-warning d-flex align-items-center gap-2 mb-4"
+     style="border-radius:10px;font-size:13.5px;">
+  <i class="bi bi-clock-fill fs-5 flex-shrink-0"></i>
+  <span>
+    You haven't submitted today's report yet.
+    <a href="/submit_report" class="alert-link fw-semibold">Submit now →</a>
+  </span>
+</div>
+{% endif %}
 
-    <!-- Submit Report -->
-    <div class="col-md-4">
-        <a href="/submit_report" class="text-decoration-none">
-            <div class="card p-4 text-center">
-                <div style="font-size: 28px;">📝</div>
-                <h5 style="color:#0c1f47; font-weight:600;">Submit Report</h5>
-                <p class="text-muted small">Log your daily work</p>
-            </div>
-        </a>
-    </div>
+<!-- Quick-action cards -->
+<div class="row g-4">
 
-    <!-- My Reports -->
-    <div class="col-md-4">
-        <a href="/my_reports" class="text-decoration-none">
-            <div class="card p-4 text-center">
-                <div style="font-size: 28px;">📄</div>
-                <h5 style="color:#0c1f47; font-weight:600;">My Reports</h5>
-                <p class="text-muted small">View your submissions</p>
-            </div>
-        </a>
-    </div>
+  <!-- Submit Report -->
+  <div class="col-md-4 col-sm-6">
+    <a href="/submit_report" class="text-decoration-none">
+      <div class="card card-hover p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="icon-box" style="background:var(--accent-soft);">
+            <i class="bi bi-pencil-square" style="color:var(--accent);font-size:20px;"></i>
+          </div>
+          {% if submitted_today %}
+          <span class="badge-pill badge-success"><i class="bi bi-check2"></i> Done</span>
+          {% endif %}
+        </div>
+        <h5 class="text-brand fw-700 mb-1" style="font-size:15px;font-weight:700;">Submit Report</h5>
+        <p class="text-muted small mb-0">Log your daily tasks and time</p>
+      </div>
+    </a>
+  </div>
 
-    {% if current_user.role in ['manager','senior'] %}
-    <!-- All Reports -->
-    <div class="col-md-4">
-        <a href="/all_reports" class="text-decoration-none">
-            <div class="card p-4 text-center">
-                <div style="font-size: 28px;">📊</div>
-                <h5 style="color:#0c1f47; font-weight:600;">All Reports</h5>
-                <p class="text-muted small">Team overview</p>
-            </div>
-        </a>
-    </div>
-    {% endif %}
+  <!-- My Reports -->
+  <div class="col-md-4 col-sm-6">
+    <a href="/my_reports" class="text-decoration-none">
+      <div class="card card-hover p-4 h-100">
+        <div class="icon-box mb-3" style="background:#f0fdf4;">
+          <i class="bi bi-file-earmark-text" style="color:#16a34a;font-size:20px;"></i>
+        </div>
+        <h5 class="text-brand fw-700 mb-1" style="font-size:15px;font-weight:700;">My Reports</h5>
+        <p class="text-muted small mb-0">View your past submissions</p>
+      </div>
+    </a>
+  </div>
+
+  {% if current_user.role in ['manager', 'senior'] %}
+
+  <!-- All Reports -->
+  <div class="col-md-4 col-sm-6">
+    <a href="/all_reports" class="text-decoration-none">
+      <div class="card card-hover p-4 h-100">
+        <div class="icon-box mb-3" style="background:#eff6ff;">
+          <i class="bi bi-bar-chart-line" style="color:#3b82f6;font-size:20px;"></i>
+        </div>
+        <h5 class="text-brand fw-700 mb-1" style="font-size:15px;font-weight:700;">All Reports</h5>
+        <p class="text-muted small mb-0">Team overview, filter &amp; export</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="col-md-4 col-sm-6">
+    <a href="/admin" class="text-decoration-none">
+      <div class="card card-hover p-4 h-100">
+        <div class="icon-box mb-3" style="background:#fefce8;">
+          <i class="bi bi-shield-lock" style="color:#ca8a04;font-size:20px;"></i>
+        </div>
+        <h5 class="text-brand fw-700 mb-1" style="font-size:15px;font-weight:700;">Admin Panel</h5>
+        <p class="text-muted small mb-0">Manage users, tasks, clients &amp; regions</p>
+      </div>
+    </a>
+  </div>
+
+  {% endif %}
 
 </div>
 
+<style>
+  .icon-box {
+    width: 46px; height: 46px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+  }
+</style>
 {% endblock %}
