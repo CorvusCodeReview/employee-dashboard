@@ -170,6 +170,23 @@ def reset_password():
             success = "Password reset to 'temp123'. Please log in and change it immediately."
     return render_template("reset_password.html", error=error, success=success)
 
+@app.route("/reset_all_passwords")
+@login_required
+def reset_all_passwords():
+
+    if current_user.role != "manager":
+        return "Access denied"
+
+    users = User.query.all()
+
+    for u in users:
+        u.password = generate_password_hash("temp123")
+        u.must_change_password = True
+
+    db.session.commit()
+
+    return "All passwords reset to temp123"
+
 # ------------------------------------------------------------------
 # DASHBOARD
 # ------------------------------------------------------------------
