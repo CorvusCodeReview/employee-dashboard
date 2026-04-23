@@ -1,98 +1,96 @@
 {% extends 'base.html' %}
+{% block title %}All Reports{% endblock %}
+
 {% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb-trail"><a href="/">Home</a> &rsaquo; All Reports</div>
+    <h1 class="page-title">All Reports</h1>
+  </div>
+  <a href="/export{% if selected_user or selected_date %}?user_id={{ selected_user or '' }}&date={{ selected_date or '' }}{% endif %}"
+     class="btn btn-success">
+    <i class="bi bi-file-earmark-excel"></i> Export Excel
+  </a>
+</div>
 
-<h3 class="page-title">All Reports</h3>
-
-<div class="card p-3">
-
-<form method="GET" class="row g-3">
-
+<!-- Filters -->
+<div class="card p-3 mb-3">
+  <form method="GET" class="row g-3 align-items-end">
     <div class="col-md-4">
-        <label>Employee</label>
-        <select name="user_id" class="form-select">
-            <option value="">All</option>
-            {% for user in users %}
-                <option value="{{ user.id }}" {% if selected_user == user.id|string %}selected{% endif %}>
-                    {{ user.username }}
-                </option>
-            {% endfor %}
-        </select>
+      <label class="form-label">Employee</label>
+      <select name="user_id" class="form-select">
+        <option value="">All Employees</option>
+        {% for u in users %}
+        <option value="{{ u.id }}" {% if selected_user == u.id|string %}selected{% endif %}>
+          {{ u.username }} ({{ u.role }})
+        </option>
+        {% endfor %}
+      </select>
     </div>
-
-<div class="col-md-4">
-    <label>Date</label>
-
-    <div style="position: relative;">
-        <input type="text"
-               name="date"
-               class="form-control custom-date"
-               value="{{ selected_date if selected_date else '' }}"
-               placeholder="Select date">
-
-        <span style="
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #555;
-        ">
-            📅
-        </span>
+    <div class="col-md-4">
+      <label class="form-label">Date</label>
+      <input type="text" name="date" class="form-control datepick"
+             value="{{ selected_date }}" placeholder="Select date">
     </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button class="btn btn-primary flex-fill" type="submit">
+        <i class="bi bi-funnel"></i> Filter
+      </button>
+      <a href="/all_reports" class="btn btn-outline-secondary">
+        <i class="bi bi-x-lg"></i> Clear
+      </a>
+    </div>
+  </form>
 </div>
 
-    <div class="col-md-4 d-flex align-items-end gap-2">
-        <button class="btn btn-primary">Filter</button>
-
-        <!-- ✅ EXPORT BUTTON WITH POPUP -->
-        <a href="/export?user_id={{ selected_user }}&date={{ selected_date }}"
-           class="btn btn-success"
-           onclick="alert('Export started. File will download shortly!')">
-           Export
-        </a>
-    </div>
-
-</form>
-
+<!-- Results -->
+<div class="card">
+  {% if reports %}
+  <div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-muted);">
+    Showing <strong style="color:var(--text);">{{ reports|length }}</strong>
+    report{{ 's' if reports|length != 1 }}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Role</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+        {% set report_user = users | selectattr('id', 'equalto', report.user_id) | first %}
+        <tr>
+          <td style="font-weight:600;">{{ report_user.username if report_user else '—' }}</td>
+          <td>
+            {% if report_user %}
+            <span class="badge-pill
+              {% if report_user.role == 'manager' %}badge-gold
+              {% elif report_user.role == 'senior' %}badge-purple
+              {% else %}badge-muted{% endif %}">
+              {{ report_user.role | capitalize }}
+            </span>
+            {% endif %}
+          </td>
+          <td>{{ report.date }}</td>
+          <td>
+            <a href="/report/{{ report.id }}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i> View
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-search"></i>
+    <p>No reports match the selected filters.</p>
+  </div>
+  {% endif %}
 </div>
-
-<div class="card mt-3 p-3">
-
-<table class="table table-hover">
-<tr>
-    <th>Employee</th>
-    <th>Date</th>
-    <th>Action</th>
-</tr>
-
-{% if reports %}
-    {% for report in reports %}
-    <tr>
-        <td>
-            {% for user in users %}
-                {% if user.id == report.user_id %}
-                    {{ user.username }}
-                {% endif %}
-            {% endfor %}
-        </td>
-        <td>{{ report.date }}</td>
-        <td>
-            <a href="/report/{{ report.id }}" class="btn btn-sm btn-info">View</a>
-        </td>
-    </tr>
-    {% endfor %}
-{% else %}
-    <!-- ✅ EMPTY STATE -->
-    <tr>
-        <td colspan="3" class="text-center text-muted">
-            No reports found
-        </td>
-    </tr>
-{% endif %}
-
-</table>
-
-</div>
-
 {% endblock %}
