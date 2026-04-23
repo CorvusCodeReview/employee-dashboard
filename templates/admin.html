@@ -1,137 +1,285 @@
 {% extends 'base.html' %}
+{% block title %}Admin Panel{% endblock %}
 
 {% block content %}
-
-<h3 class="page-title mb-4">Admin Panel</h3>
-
-<!-- 🔹 USERS -->
-<div class="card p-3 mb-4">
-    <h5 class="mb-3">Users</h5>
-
-    {% if current_user.role in ['manager','senior'] %}
-    <form method="POST" action="/add_user" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input name="username" class="form-control" placeholder="Username" required>
-        </div>
-
-        <div class="col-md-4">
-            <input name="password" class="form-control" placeholder="Password" required>
-        </div>
-
-        <div class="col-md-3">
-            <select name="role" class="form-select">
-                <option value="employee">Employee</option>
-                <option value="senior">Senior</option>
-                <option value="manager">Manager</option>
-            </select>
-        </div>
-
-        <div class="col-md-1">
-            <button class="btn btn-primary w-100">Add</button>
-        </div>
-    </form>
-    {% endif %}
-
-    <table class="table table-hover align-middle">
-        <tr>
-            <th>Username</th>
-            <th>Role</th>
-        </tr>
-
-        {% for user in users %}
-        <tr>
-            <td>{{ user.username }}</td>
-            <td>{{ user.role }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<div class="page-header">
+  <div>
+    <div class="breadcrumb-trail"><a href="/">Home</a> &rsaquo; Admin Panel</div>
+    <h1 class="page-title">Admin Panel</h1>
+  </div>
 </div>
 
+<!-- ============================================================
+     USERS SECTION
+============================================================ -->
+<div class="card p-4 mb-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h5 style="margin:0;font-weight:700;color:var(--brand);">
+      <i class="bi bi-people me-2"></i>Users
+      <span style="font-size:13px;font-weight:400;color:var(--text-muted);">({{ users|length }})</span>
+    </h5>
+    {% if current_user.role in ['manager','senior'] %}
+    <button class="btn btn-primary btn-sm" data-bs-toggle="collapse"
+            data-bs-target="#add-user-panel" aria-expanded="false">
+      <i class="bi bi-person-plus"></i> Add User
+    </button>
+    {% endif %}
+  </div>
 
-<!-- 🔹 DATA MANAGEMENT -->
-{% if current_user.role == 'manager' %}
-<div class="card p-3 mb-4">
-    <h5 class="mb-4">Data Management</h5>
-
-    <div class="row g-4">
-
-        <!-- TASKS -->
-        <div class="col-md-4">
-            <div class="border rounded p-3 admin-box">
-
-                <h6 class="mb-3">Tasks</h6>
-
-                <form method="POST" action="/add_task" class="mb-3">
-                    <input name="name" class="form-control mb-2" placeholder="Task name" required>
-                    <input name="suggested_time" class="form-control mb-2" placeholder="Time (e.g. 2 hrs)" required>
-                    <button class="btn btn-primary btn-sm w-100">Add</button>
-                </form>
-
-                <div class="admin-list-clean">
-                    {% for t in tasks %}
-                    <div class="list-item">
-                        <span>{{ t.name }}</span>
-                        <a href="/delete_task/{{ t.id }}" class="delete-icon"
-                           onclick="return confirm('Delete this task?')">✕</a>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            </div>
+  <!-- Add-user form (collapsible) -->
+  {% if current_user.role in ['manager','senior'] %}
+  <div class="collapse mb-3" id="add-user-panel">
+    <div class="card p-3" style="background:#f8fafc;border:1px dashed var(--border)!important;
+                                  box-shadow:none!important;">
+      <form method="POST" action="/add_user" class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label">Username</label>
+          <input name="username" class="form-control" placeholder="e.g. john_doe" required>
         </div>
-
-
-        <!-- CLIENTS -->
-        <div class="col-md-4">
-            <div class="border rounded p-3 admin-box">
-
-                <h6 class="mb-3">Clients</h6>
-
-                <form method="POST" action="/add_client" class="mb-3">
-                    <input name="name" class="form-control mb-2" placeholder="Add client" required>
-                    <button class="btn btn-primary btn-sm w-100">Add</button>
-                </form>
-
-                <div class="admin-list-clean">
-                    {% for c in clients %}
-                    <div class="list-item">
-                        <span>{{ c.name }}</span>
-                        <a href="/delete_client/{{ c.id }}" class="delete-icon"
-                           onclick="return confirm('Delete this client?')">✕</a>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            </div>
+        <div class="col-md-3">
+          <label class="form-label">Temp Password</label>
+          <input name="password" type="password" class="form-control"
+                 placeholder="Initial password" required>
         </div>
-
-
-        <!-- REGIONS -->
-        <div class="col-md-4">
-            <div class="border rounded p-3 admin-box">
-
-                <h6 class="mb-3">Regions</h6>
-
-                <form method="POST" action="/add_region" class="mb-3">
-                    <input name="name" class="form-control mb-2" placeholder="Add region" required>
-                    <button class="btn btn-primary btn-sm w-100">Add</button>
-                </form>
-
-                <div class="admin-list-clean">
-                    {% for r in regions %}
-                    <div class="list-item">
-                        <span>{{ r.name }}</span>
-                        <a href="/delete_region/{{ r.id }}" class="delete-icon"
-                           onclick="return confirm('Delete this region?')">✕</a>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            </div>
+        <div class="col-md-3">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-select">
+            <option value="employee">Employee</option>
+            <option value="senior">Senior</option>
+            {% if current_user.role == 'manager' %}
+            <option value="manager">Manager</option>
+            {% endif %}
+          </select>
         </div>
-
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100">
+            <i class="bi bi-plus-lg"></i> Add User
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+  {% endif %}
+
+  <!-- Users table -->
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Password</th>
+          {% if current_user.role in ['manager','senior'] %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td style="font-weight:600;">
+            {{ u.username }}
+            {% if u.id == current_user.id %}
+            <span class="ms-1 badge-pill badge-accent" style="font-size:10px;">YOU</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.role == 'manager' %}
+            <span class="badge-pill badge-gold"><i class="bi bi-shield-fill"></i> Manager</span>
+            {% elif u.role == 'senior' %}
+            <span class="badge-pill badge-purple"><i class="bi bi-star-fill"></i> Senior</span>
+            {% else %}
+            <span class="badge-pill badge-muted"><i class="bi bi-person"></i> Employee</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.must_change_password %}
+            <span class="badge-pill badge-warning">
+              <i class="bi bi-exclamation-triangle"></i> Temp (must change)
+            </span>
+            {% else %}
+            <span class="badge-pill badge-success"><i class="bi bi-check2"></i> Set</span>
+            {% endif %}
+          </td>
+          {% if current_user.role in ['manager','senior'] %}
+          <td>
+            <div class="d-flex gap-2">
+              <a href="/reset_user_password/{{ u.id }}"
+                 class="btn btn-sm btn-outline-warning"
+                 onclick="return confirm('Reset {{ u.username }}\'s password to temp123?')">
+                <i class="bi bi-arrow-clockwise"></i> Reset PW
+              </a>
+              {% if u.id != current_user.id %}
+              <a href="/delete_user/{{ u.id }}"
+                 class="btn btn-sm btn-outline-danger"
+                 onclick="return confirm('Delete {{ u.username }}? This cannot be undone.')">
+                <i class="bi bi-trash"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================
+     DATA MANAGEMENT  (manager only)
+============================================================ -->
+{% if current_user.role == 'manager' %}
+<div class="card p-4">
+  <h5 style="margin:0 0 20px;font-weight:700;color:var(--brand);">
+    <i class="bi bi-database me-2"></i>Data Management
+  </h5>
+
+  <div class="row g-4">
+
+    <!-- ---- TASKS ---- -->
+    <div class="col-md-4">
+      <div class="data-panel">
+        <div class="data-panel-header">
+          <div class="data-panel-icon" style="background:var(--accent-soft);">
+            <i class="bi bi-list-check" style="color:var(--accent);"></i>
+          </div>
+          <span class="data-panel-title">
+            Tasks <span class="text-muted" style="font-weight:400;">({{ tasks|length }})</span>
+          </span>
+        </div>
+
+        <form method="POST" action="/add_task" class="mb-3">
+          <input name="name" class="form-control mb-2"
+                 placeholder="Task name" required>
+          <input name="suggested_time" class="form-control mb-2"
+                 placeholder="Suggested time (e.g. 2h)">
+          <button class="btn btn-primary btn-sm w-100">
+            <i class="bi bi-plus-lg"></i> Add Task
+          </button>
+        </form>
+
+        <div class="admin-list">
+          {% for t in tasks %}
+          <div class="admin-list-item">
+            <div>
+              <div style="font-size:13px;font-weight:600;">{{ t.name }}</div>
+              {% if t.suggested_time %}
+              <div style="font-size:11px;color:var(--text-muted);">{{ t.suggested_time }}</div>
+              {% endif %}
+            </div>
+            <a href="/delete_task/{{ t.id }}" class="btn-del"
+               onclick="return confirm('Delete task \'{{ t.name }}\'?')" title="Delete">
+              <i class="bi bi-x-lg"></i>
+            </a>
+          </div>
+          {% else %}
+          <div style="font-size:13px;color:var(--text-muted);padding:6px 0;">No tasks yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- CLIENTS ---- -->
+    <div class="col-md-4">
+      <div class="data-panel">
+        <div class="data-panel-header">
+          <div class="data-panel-icon" style="background:#f0fdf4;">
+            <i class="bi bi-building" style="color:#16a34a;"></i>
+          </div>
+          <span class="data-panel-title">
+            Clients <span class="text-muted" style="font-weight:400;">({{ clients|length }})</span>
+          </span>
+        </div>
+
+        <form method="POST" action="/add_client" class="mb-3">
+          <input name="name" class="form-control mb-2"
+                 placeholder="Client name" required>
+          <button class="btn btn-primary btn-sm w-100">
+            <i class="bi bi-plus-lg"></i> Add Client
+          </button>
+        </form>
+
+        <div class="admin-list">
+          {% for c in clients %}
+          <div class="admin-list-item">
+            <span style="font-size:13px;font-weight:600;">{{ c.name }}</span>
+            <a href="/delete_client/{{ c.id }}" class="btn-del"
+               onclick="return confirm('Delete client \'{{ c.name }}\'?')" title="Delete">
+              <i class="bi bi-x-lg"></i>
+            </a>
+          </div>
+          {% else %}
+          <div style="font-size:13px;color:var(--text-muted);padding:6px 0;">No clients yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- REGIONS ---- -->
+    <div class="col-md-4">
+      <div class="data-panel">
+        <div class="data-panel-header">
+          <div class="data-panel-icon" style="background:#fff7ed;">
+            <i class="bi bi-geo-alt" style="color:#ea580c;"></i>
+          </div>
+          <span class="data-panel-title">
+            Regions <span class="text-muted" style="font-weight:400;">({{ regions|length }})</span>
+          </span>
+        </div>
+
+        <form method="POST" action="/add_region" class="mb-3">
+          <input name="name" class="form-control mb-2"
+                 placeholder="Region name" required>
+          <button class="btn btn-primary btn-sm w-100">
+            <i class="bi bi-plus-lg"></i> Add Region
+          </button>
+        </form>
+
+        <div class="admin-list">
+          {% for r in regions %}
+          <div class="admin-list-item">
+            <span style="font-size:13px;font-weight:600;">{{ r.name }}</span>
+            <a href="/delete_region/{{ r.id }}" class="btn-del"
+               onclick="return confirm('Delete region \'{{ r.name }}\'?')" title="Delete">
+              <i class="bi bi-x-lg"></i>
+            </a>
+          </div>
+          {% else %}
+          <div style="font-size:13px;color:var(--text-muted);padding:6px 0;">No regions yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 {% endif %}
 
+<style>
+  .data-panel {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    height: 100%;
+  }
+  .data-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .data-panel-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .data-panel-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--brand);
+  }
+</style>
 {% endblock %}
