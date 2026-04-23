@@ -1,133 +1,244 @@
 {% extends 'base.html' %}
+{% block title %}{% if is_edit %}Edit Report{% else %}Submit Report{% endif %}{% endblock %}
 
 {% block content %}
-
-<h3 class="page-title">Submit Report</h3>
+<div class="page-header">
+  <div>
+    <div class="breadcrumb-trail"><a href="/">Home</a> &rsaquo; Submit Report</div>
+    <h1 class="page-title">{% if is_edit %}Edit Today's Report{% else %}Submit Report{% endif %}</h1>
+  </div>
+  <span style="font-size:13px;color:var(--text-muted);">
+    <i class="bi bi-calendar3 me-1"></i>{{ today }}
+  </span>
+</div>
 
 <div class="card p-4">
+  <form method="POST" id="report-form">
 
-<form method="POST">
+    <!-- Task rows -->
+    <div id="task-container"></div>
 
-<div id="task-container">
+    <!-- Add row button -->
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-1" onclick="addRow()">
+      <i class="bi bi-plus-lg"></i> Add Task
+    </button>
 
-{% for t in existing_tasks or [None] %}
-<div class="row mb-3 align-items-center">
+    <hr class="my-4">
 
-    <!-- TASK -->
-    <div class="col-md-3">
-        <select name="task" class="form-select task-select" required>
-            {% for task in tasks %}
-            <option value="{{ task.id }}"
-            {% if t and task.id == t.task_id %}selected{% endif %}>
-            {{ task.name }} ({{ task.suggested_time }})
-            </option>
-            {% endfor %}
-        </select>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit">
+        <i class="bi bi-check2-circle"></i>
+        {% if is_edit %}Update Report{% else %}Submit Report{% endif %}
+      </button>
+      <a href="/" class="btn btn-outline-secondary">Cancel</a>
     </div>
-
-    <!-- CLIENT (HIDDEN INITIALLY) -->
-    <div class="col-md-2 client-box" style="display:none;">
-        <select name="client" class="form-select">
-            <option value="" disabled selected hidden>Select Client</option>
-            {% for c in clients %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <!-- REGION (HIDDEN INITIALLY) -->
-    <div class="col-md-2 region-box" style="display:none;">
-        <select name="region" class="form-select">
-            <option value="" disabled selected hidden>Select Region</option>
-            {% for r in regions %}
-            <option value="{{ r.id }}">{{ r.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <!-- TIME -->
-    <div class="col-md-2">
-        <input name="time" class="form-control same-input"
-               value="{{ t.actual_time if t else '' }}"
-               placeholder="Time">
-    </div>
-
-    <!-- NOTES -->
-    <div class="col-md-2">
-        <input name="notes" class="form-control same-input"
-               value="{{ t.notes if t else '' }}"
-               placeholder="Notes">
-    </div>
-
-    <!-- DELETE -->
-    <div class="col-md-1">
-        <button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button>
-    </div>
-
-</div>
-{% endfor %}
-
+  </form>
 </div>
 
-<button type="button" class="btn btn-secondary" onclick="addRow()">+ Add Task</button>
-
-<br><br>
-
-<button class="btn btn-primary shadow-sm">Submit</button>
-
-</form>
-
-</div>
-
+<!-- ===== DATA passed to JS ===== -->
 <script>
-function addRow() {
-    let container = document.getElementById('task-container');
-    let firstRow = container.children[0];
-    let row = firstRow.cloneNode(true);
+  // Task list from backend
+  var TASKS = [
+    {% for t in tasks %}
+    { id: "{{ t.id }}", name: {{ t.name | tojson }}, time: {{ (t.suggested_time or '') | tojson }} }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 
-    // reset select
-    let select = row.querySelector('.task-select');
-    select.selectedIndex = 0;
+  // Client list
+  var CLIENTS = [
+    {% for c in clients %}
+    { id: "{{ c.id }}", name: {{ c.name | tojson }} }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 
-    // reset inputs
-    row.querySelectorAll('input').forEach(i => i.value = '');
+  // Region list
+  var REGIONS = [
+    {% for r in regions %}
+    { id: "{{ r.id }}", name: {{ r.name | tojson }} }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 
-    // hide client & region
-    row.querySelector('.client-box').style.display = "none";
-    row.querySelector('.region-box').style.display = "none";
+  // Pre-existing tasks for edit mode
+  var EXISTING = [
+    {% for t in existing_tasks %}
+    {
+      task_id:   "{{ t.task_id }}",
+      time:      {{ (t.actual_time or '') | tojson }},
+      notes:     {{ (t.notes or '') | tojson }},
+      client_id: "{{ t.client_id or '' }}",
+      region_id: "{{ t.region_id or '' }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 
-    container.appendChild(row);
-}
-
-function removeRow(btn) {
-    let container = document.getElementById('task-container');
-
-    if (container.children.length > 1) {
-        btn.closest('.row').remove();
-    }
-}
-
-/* 🔥 CONDITIONAL LOGIC */
-document.addEventListener("change", function(e) {
-
-    if (e.target.classList.contains("task-select")) {
-
-        let row = e.target.closest(".row");
-        let selectedText = e.target.options[e.target.selectedIndex].text;
-
-        let clientBox = row.querySelector(".client-box");
-        let regionBox = row.querySelector(".region-box");
-
-        if (selectedText.includes("Lead Uploads") || selectedText.includes("Lead QA")) {
-            clientBox.style.display = "block";
-            regionBox.style.display = "block";
-        } else {
-            clientBox.style.display = "none";
-            regionBox.style.display = "none";
-        }
-    }
-
-});
+  // Tasks that require client + region selection
+  var CLIENT_REGION_TASKS = ["Lead Uploads", "Lead QA"];
 </script>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  var container = document.getElementById('task-container');
+
+  /* ---- helpers ---- */
+  function needsClientRegion(taskName) {
+    return CLIENT_REGION_TASKS.some(function (k) { return taskName.indexOf(k) !== -1; });
+  }
+
+  function buildSelect(name, options, selectedId, placeholder) {
+    var sel = document.createElement('select');
+    sel.name = name;
+    sel.className = 'form-select';
+    var ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = placeholder;
+    sel.appendChild(ph);
+    options.forEach(function (o) {
+      var opt = document.createElement('option');
+      opt.value = o.id;
+      opt.textContent = o.name;
+      if (String(o.id) === String(selectedId)) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    return sel;
+  }
+
+  function buildTaskSelect(selectedId) {
+    var sel = document.createElement('select');
+    sel.name = 'task';
+    sel.className = 'form-select task-select';
+    sel.required = true;
+    TASKS.forEach(function (t) {
+      var opt = document.createElement('option');
+      opt.value = t.id;
+      opt.dataset.time = t.time;
+      opt.textContent = t.name + (t.time ? ' (' + t.time + ')' : '');
+      if (String(t.id) === String(selectedId)) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    return sel;
+  }
+
+  function makeCol(mdSize, label, el, extraStyle) {
+    var col = document.createElement('div');
+    col.className = 'col-md-' + mdSize;
+    if (extraStyle) col.style.cssText = extraStyle;
+    if (label) {
+      var lbl = document.createElement('label');
+      lbl.className = 'form-label';
+      lbl.textContent = label;
+      col.appendChild(lbl);
+    }
+    col.appendChild(el);
+    return col;
+  }
+
+  function buildRow(data) {
+    data = data || {};
+
+    var row = document.createElement('div');
+    row.className = 'task-row card mb-3 p-3';
+    row.style.cssText = 'border:1px solid var(--border)!important;box-shadow:none!important;';
+
+    var inner = document.createElement('div');
+    inner.className = 'row g-2 align-items-end';
+
+    /* Task select */
+    var taskSel = buildTaskSelect(data.task_id || '');
+    var taskCol = makeCol(3, 'Task *', taskSel);
+    inner.appendChild(taskCol);
+
+    /* Client (conditionally shown) */
+    var clientSel = buildSelect('client', CLIENTS, data.client_id || '', '— Client —');
+    var clientCol = makeCol(2, 'Client', clientSel);
+    clientCol.classList.add('client-col');
+    clientCol.style.display = 'none';
+    inner.appendChild(clientCol);
+
+    /* Region (conditionally shown) */
+    var regionSel = buildSelect('region', REGIONS, data.region_id || '', '— Region —');
+    var regionCol = makeCol(2, 'Region', regionSel);
+    regionCol.classList.add('region-col');
+    regionCol.style.display = 'none';
+    inner.appendChild(regionCol);
+
+    /* Time */
+    var timeInput = document.createElement('input');
+    timeInput.name = 'time';
+    timeInput.className = 'form-control time-input';
+    timeInput.value = data.time || '';
+    timeInput.placeholder = 'e.g. 2h 30m';
+    timeInput.required = true;
+    inner.appendChild(makeCol(2, 'Time Spent *', timeInput));
+
+    /* Notes */
+    var notesInput = document.createElement('input');
+    notesInput.name = 'notes';
+    notesInput.className = 'form-control';
+    notesInput.value = data.notes || '';
+    notesInput.placeholder = 'Optional notes';
+    inner.appendChild(makeCol(3, 'Notes', notesInput));
+
+    /* Remove button */
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-outline-danger btn-sm w-100';
+    removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
+    removeBtn.title = 'Remove row';
+    removeBtn.addEventListener('click', function () {
+      if (container.querySelectorAll('.task-row').length > 1) {
+        row.remove();
+      } else {
+        alert('You must keep at least one task row.');
+      }
+    });
+    inner.appendChild(makeCol(1, null, removeBtn, 'display:flex;align-items:flex-end;'));
+
+    row.appendChild(inner);
+
+    /* --- event: task change → show/hide client-region, auto-fill time --- */
+    taskSel.addEventListener('change', function () {
+      var opt  = taskSel.options[taskSel.selectedIndex];
+      var name = opt ? opt.textContent : '';
+      var show = needsClientRegion(name);
+      clientCol.style.display = show ? '' : 'none';
+      regionCol.style.display = show ? '' : 'none';
+      if (opt && opt.dataset.time && !timeInput.value) {
+        timeInput.value = opt.dataset.time;
+      }
+    });
+
+    /* Init visibility for pre-filled rows */
+    (function () {
+      var opt  = taskSel.options[taskSel.selectedIndex];
+      var name = opt ? opt.textContent : '';
+      if (needsClientRegion(name)) {
+        clientCol.style.display = '';
+        regionCol.style.display = '';
+      }
+    })();
+
+    return row;
+  }
+
+  function addRow(data) {
+    container.appendChild(buildRow(data || {}));
+  }
+
+  /* Expose addRow globally for the inline onclick */
+  window.addRow = addRow;
+
+  /* Seed existing rows (edit mode) or one blank row */
+  if (EXISTING.length > 0) {
+    EXISTING.forEach(function (e) { addRow(e); });
+  } else {
+    addRow();
+  }
+
+})();
+</script>
 {% endblock %}
