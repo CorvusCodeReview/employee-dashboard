@@ -170,6 +170,28 @@ def reset_password():
             success = "Password reset to 'temp123'. Please log in and change it immediately."
     return render_template("reset_password.html", error=error, success=success)
 
+@app.route("/fix_passwords_secure")
+@login_required
+def fix_passwords_secure():
+
+    # Only manager can run this
+    if current_user.role != "manager":
+        return "Access denied"
+
+    users = User.query.all()
+
+    fixed_count = 0
+
+    for u in users:
+        # If already hashed, skip
+        if not u.password.startswith("pbkdf2"):
+            u.password = generate_password_hash(u.password)
+            fixed_count += 1
+
+    db.session.commit()
+
+    return f"Fixed {fixed_count} users"
+
 # ------------------------------------------------------------------
 # DASHBOARD
 # ------------------------------------------------------------------
